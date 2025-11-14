@@ -36,6 +36,8 @@ Maven + JavaFX environment correctly set up<br>
 Game window launches<br>
 Bricks spawn, fall, and render<br>
 Controllers load without errors<br>
+fame board is now centered and stable when resizing or entering fullscreen (via updated FXML layout) <br>
+Background image restored after layout update <br>
 
 ### Implemented but Not Working Properly
 
@@ -58,5 +60,3 @@ No functional modifications yet
 JavaFX + Maven setup required fixing compiler target compatibility
 
 Java path / JAVA_HOME configuration issues resolved
-
-Fullscreen mode causes layout stretching (expected, to be fixed later)
