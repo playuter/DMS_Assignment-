@@ -36,8 +36,9 @@ Maven + JavaFX environment correctly set up<br>
 Game window launches<br>
 Bricks spawn, fall, and render<br>
 Controllers load without errors<br>
-fame board is now centered and stable when resizing or entering fullscreen (via updated FXML layout) <br>
+Game board is now centered and stable when resizing or entering fullscreen (via updated FXML layout) <br>
 Background image restored after layout update <br>
+Fixed Tetris blocks spawning position - blocks now fall from the top of the container instead of appearing partway down <br>
 
 ### Implemented but Not Working Properly
 
@@ -53,7 +54,10 @@ Background image restored after layout update <br>
 
 ### Modified Java Classes
 
-No functional modifications yet
+**SimpleBoard.java**
+- Fixed initial block spawn position in `createNewBrick()` method
+- Changed initial y-position from `10` to `2` (line 88)
+- Blocks now spawn at the top of the visible game container instead of appearing partway down
 
 ### Unexpected Problems
 
