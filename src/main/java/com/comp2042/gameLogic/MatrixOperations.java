@@ -1,10 +1,12 @@
-package com.comp2042;
+package com.comp2042.gameLogic;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.comp2042.data.ClearRow;
 
 public class MatrixOperations {
 

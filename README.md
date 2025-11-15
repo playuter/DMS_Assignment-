@@ -39,6 +39,7 @@ Controllers load without errors<br>
 Game board is now centered and stable when resizing or entering fullscreen (via updated FXML layout) <br>
 Background image restored after layout update <br>
 Fixed Tetris blocks spawning position - blocks now fall from the top of the container instead of appearing partway down <br>
+refractored classes into logical packages
 
 ### Implemented but Not Working Properly
 

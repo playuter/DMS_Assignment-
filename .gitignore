@@ -3,6 +3,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .kotlin
+COMP2042_CW.pdf
 
 ### IntelliJ IDEA ###
 .idea/modules.xml

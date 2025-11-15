@@ -1,4 +1,4 @@
-package com.comp2042;
+package com.comp2042.controller;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -22,6 +22,15 @@ import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import com.comp2042.data.DownData;
+import com.comp2042.events.EventSource;
+import com.comp2042.events.EventType;
+import com.comp2042.events.InputEventListener;
+import com.comp2042.events.MoveEvent;
+import com.comp2042.view.GameOverPanel;
+import com.comp2042.view.NotificationPanel;
+import com.comp2042.view.ViewData;
 
 public class GuiController implements Initializable {
 
