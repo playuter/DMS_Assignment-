@@ -39,7 +39,8 @@ Controllers load without errors<br>
 Game board is now centered and stable when resizing or entering fullscreen (via updated FXML layout) <br>
 Background image restored after layout update <br>
 Fixed Tetris blocks spawning position - blocks now fall from the top of the container instead of appearing partway down <br>
-refractored classes into logical packages
+Refactored classes into logical packages (controller, model, view, events, data, gameLogic) <br>
+Extracted input handling logic from GuiController into separate InputHandler class
 
 ### Implemented but Not Working Properly
 
@@ -51,14 +52,57 @@ refractored classes into logical packages
 
 ### New Java Classes
 
-(None added yet — will update when created)
+**InputHandler.java** (`src/main/java/com/comp2042/controller/InputHandler.java`)
+- **Purpose**: Handles all keyboard input processing for the Tetris game
+- **Responsibilities**: 
+  - Processes key press events (LEFT, RIGHT, UP, DOWN, N keys)
+  - Checks game state (paused/game over) before processing input
+  - Delegates game logic events to GameController
+  - Updates display via callback interface (BrickDisplayUpdater)
+- **Design Pattern**: Uses callback interface pattern to avoid circular dependencies between InputHandler and GuiController
+- **Benefits**: Separates input handling from display logic, follows Single Responsibility Principle, improves testability
 
 ### Modified Java Classes
 
-**SimpleBoard.java**
+**SimpleBoard.java** (`src/main/java/com/comp2042/model/SimpleBoard.java`)
 - Fixed initial block spawn position in `createNewBrick()` method
 - Changed initial y-position from `10` to `2` (line 88)
 - Blocks now spawn at the top of the visible game container instead of appearing partway down
+
+**GuiController.java** (`src/main/java/com/comp2042/controller/GuiController.java`)
+- **Refactoring**: Extracted keyboard input handling logic into InputHandler class
+- **Changes Made**:
+  - Removed keyboard event handling code from `initialize()` method (previously lines 68-93)
+  - Now delegates keyboard input to `InputHandler` instance
+  - Implements `InputHandler.BrickDisplayUpdater` interface to receive display update callbacks
+  - Simplified `initialize()` method to only set up input handler delegation
+- **Rationale**: 
+  - Follows Single Responsibility Principle - GuiController now focuses on display/UI logic
+  - Input handling is separated into its own class for better organization and testability
+  - Reduces complexity of GuiController class
+- **Impact**: 
+  - Cleaner code structure with better separation of concerns
+  - Input handling logic can now be tested independently
+  - Easier to modify input behavior without touching display code
+
+**Package Reorganization**
+- **Before**: All classes were in a single `com.comp2042` package
+- **After**: Classes organized into logical packages:
+  - `controller/` - GameController, GuiController, InputHandler
+  - `model/` - Board, SimpleBoard, Score
+  - `view/` - ViewData, GameOverPanel, NotificationPanel
+  - `events/` - MoveEvent, EventType, EventSource, InputEventListener
+  - `data/` - DownData, ClearRow, NextShapeInfo
+  - `gameLogic/` - MatrixOperations, BrickRotator
+  - `logic/bricks/` - All brick type classes (already existed)
+- **Rationale**: 
+  - Improves code organization and maintainability
+  - Makes it easier to locate related classes
+  - Follows standard Java package organization practices
+- **Impact**: 
+  - Better code structure and navigation
+  - Clearer separation of concerns
+  - Easier for other developers to understand the codebase
 
 ### Unexpected Problems
 

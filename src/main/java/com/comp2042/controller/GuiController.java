@@ -6,13 +6,10 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.effect.Reflection;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -32,7 +29,7 @@ import com.comp2042.view.GameOverPanel;
 import com.comp2042.view.NotificationPanel;
 import com.comp2042.view.ViewData;
 
-public class GuiController implements Initializable {
+public class GuiController implements Initializable, InputHandler.BrickDisplayUpdater {
 
     private static final int BRICK_SIZE = 20;
 
@@ -59,38 +56,24 @@ public class GuiController implements Initializable {
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
+    
+    private InputHandler inputHandler;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
-        gamePanel.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
-                    if (keyEvent.getCode() == KeyCode.LEFT || keyEvent.getCode() == KeyCode.A) {
-                        refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
-                        keyEvent.consume();
-                    }
-                    if (keyEvent.getCode() == KeyCode.RIGHT || keyEvent.getCode() == KeyCode.D) {
-                        refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
-                        keyEvent.consume();
-                    }
-                    if (keyEvent.getCode() == KeyCode.UP || keyEvent.getCode() == KeyCode.W) {
-                        refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
-                        keyEvent.consume();
-                    }
-                    if (keyEvent.getCode() == KeyCode.DOWN || keyEvent.getCode() == KeyCode.S) {
-                        moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
-                        keyEvent.consume();
-                    }
-                }
-                if (keyEvent.getCode() == KeyCode.N) {
-                    newGame(null);
-                }
+        
+        // Initialize input handler (will be set up after eventListener is set)
+        // The input handler will be created in setEventListener() method
+        
+        gamePanel.setOnKeyPressed(keyEvent -> {
+            if (inputHandler != null) {
+                inputHandler.handleKeyPress(keyEvent);
             }
         });
+        
         gameOverPanel.setVisible(false);
 
         final Reflection reflection = new Reflection();
@@ -165,7 +148,12 @@ public class GuiController implements Initializable {
         return returnPaint;
     }
 
-    private void refreshBrick(ViewData brick) {
+    /**
+     * Refreshes the brick display with new position and shape data.
+     * Part of the BrickDisplayUpdater interface.
+     */
+    @Override
+    public void refreshBrick(ViewData brick) {
         if (isPause.getValue() == Boolean.FALSE) {
             brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap()
                     + brick.getxPosition() * BRICK_SIZE);
@@ -177,6 +165,40 @@ public class GuiController implements Initializable {
                 }
             }
         }
+    }
+    
+    /**
+     * Handles downward movement of the brick.
+     * Part of the BrickDisplayUpdater interface.
+     */
+    @Override
+    public void moveDown(MoveEvent event) {
+        if (isPause.getValue() == Boolean.FALSE) {
+            DownData downData = eventListener.onDownEvent(event);
+            if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
+                NotificationPanel notificationPanel = new NotificationPanel(
+                        "+" + downData.getClearRow().getScoreBonus());
+                groupNotification.getChildren().add(notificationPanel);
+                notificationPanel.showScore(groupNotification.getChildren());
+            }
+            refreshBrick(downData.getViewData());
+        }
+        gamePanel.requestFocus();
+    }
+    
+    /**
+     * Starts a new game.
+     * Part of the BrickDisplayUpdater interface.
+     */
+    @Override
+    public void newGame() {
+        timeLine.stop();
+        gameOverPanel.setVisible(false);
+        eventListener.createNewGame();
+        gamePanel.requestFocus();
+        timeLine.play();
+        isPause.setValue(Boolean.FALSE);
+        isGameOver.setValue(Boolean.FALSE);
     }
 
     public void refreshGameBackground(int[][] board) {
@@ -193,22 +215,16 @@ public class GuiController implements Initializable {
         rectangle.setArcWidth(9);
     }
 
-    private void moveDown(MoveEvent event) {
-        if (isPause.getValue() == Boolean.FALSE) {
-            DownData downData = eventListener.onDownEvent(event);
-            if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
-                NotificationPanel notificationPanel = new NotificationPanel(
-                        "+" + downData.getClearRow().getScoreBonus());
-                groupNotification.getChildren().add(notificationPanel);
-                notificationPanel.showScore(groupNotification.getChildren());
-            }
-            refreshBrick(downData.getViewData());
-        }
-        gamePanel.requestFocus();
-    }
 
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
+        // Create input handler after event listener is set
+        this.inputHandler = new InputHandler(
+            eventListener, 
+            isPause, 
+            isGameOver, 
+            this  // GuiController implements BrickDisplayUpdater
+        );
     }
 
     public void bindScore(IntegerProperty integerProperty) {
@@ -220,14 +236,12 @@ public class GuiController implements Initializable {
         isGameOver.setValue(Boolean.TRUE);
     }
 
+    /**
+     * Public method for FXML button binding (if needed).
+     * Delegates to the newGame() method from BrickDisplayUpdater interface.
+     */
     public void newGame(ActionEvent actionEvent) {
-        timeLine.stop();
-        gameOverPanel.setVisible(false);
-        eventListener.createNewGame();
-        gamePanel.requestFocus();
-        timeLine.play();
-        isPause.setValue(Boolean.FALSE);
-        isGameOver.setValue(Boolean.FALSE);
+        newGame();
     }
 
     public void pauseGame(ActionEvent actionEvent) {
