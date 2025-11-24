@@ -10,8 +10,8 @@ import com.comp2042.events.MoveEvent;
 import com.comp2042.view.ViewData;
 
 /**
-  Handles keyboard input for the Tetris game.
-  Separates input handling logic from the GUI controller.
+  *Handles keyboard input for the Tetris game.
+  *Separates input handling logic from the GUI controller.
  */
 public class InputHandler {
     private InputEventListener eventListener;
@@ -20,9 +20,9 @@ public class InputHandler {
     private BrickDisplayUpdater displayUpdater;
     
     /**
-      Interface for updating the brick display after input events.
-      This allows InputHandler to notify GuiController to refresh the display
-      without creating a circular dependency.
+      *Interface for updating the brick display after input events.
+      *This allows InputHandler to notify GuiController to refresh the display
+      *without creating a circular dependency.
      */
     public interface BrickDisplayUpdater {
         void refreshBrick(ViewData brick);
@@ -31,12 +31,12 @@ public class InputHandler {
     }
     
     /**
-      Creates a new InputHandler.
+      *Creates a new InputHandler.
       
-      @param listener The event listener to handle game logic events
-      @param isPause Property indicating if game is paused
-      @param isGameOver Property indicating if game is over
-      @param displayUpdater Callback to update the display after input
+      *@param listener The event listener to handle game logic events
+      *@param isPause Property indicating if game is paused
+      *@param isGameOver Property indicating if game is over
+      *@param displayUpdater Callback to update the display after input
      */
     public InputHandler(InputEventListener listener, 
                        BooleanProperty isPause, 
@@ -49,10 +49,10 @@ public class InputHandler {
     }
     
     /**
-      Handles a key press event.
-      Processes movement keys (LEFT, RIGHT, UP, DOWN) and game control keys (N for new game).
+      *Handles a key press event.
+      *Processes movement keys (LEFT, RIGHT, UP, DOWN) and game control keys (N for new game).
       
-      @param keyEvent The key event to process
+      *@param keyEvent The key event to process
      */
     public void handleKeyPress(KeyEvent keyEvent) {
         // Only process input if game is not paused and not over

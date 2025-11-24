@@ -40,7 +40,8 @@ Game board is now centered and stable when resizing or entering fullscreen (via 
 Background image restored after layout update <br>
 Fixed Tetris blocks spawning position - blocks now fall from the top of the container instead of appearing partway down <br>
 Refactored classes into logical packages (controller, model, view, events, data, gameLogic) <br>
-Extracted input handling logic from GuiController into separate InputHandler class
+Extracted input handling logic from GuiController into separate InputHandler class<br>
+Centralized block color mapping via new ColorMapper utility (removes color logic from GuiController)
 
 ### Implemented but Not Working Properly
 
@@ -62,6 +63,13 @@ Extracted input handling logic from GuiController into separate InputHandler cla
 - **Design Pattern**: Uses callback interface pattern to avoid circular dependencies between InputHandler and GuiController
 - **Benefits**: Separates input handling from display logic, follows Single Responsibility Principle, improves testability
 
+**ColorMapper.java** (`src/main/java/com/comp2042/view/ColorMapper.java`)
+- **Purpose**: Central utility to map block integers (0-7) to their JavaFX `Paint` colors
+- **Responsibilities**:
+  - Provides `getColorForValue(int value)` for brick rendering and board background
+  - Offers `getTransparentColor()` helper for empty cells
+- **Benefits**: Removes color-switch logic from `GuiController`, keeps theme/color updates in one place, simplifies future refactors and testing
+
 ### Modified Java Classes
 
 **SimpleBoard.java** (`src/main/java/com/comp2042/model/SimpleBoard.java`)
@@ -70,20 +78,21 @@ Extracted input handling logic from GuiController into separate InputHandler cla
 - Blocks now spawn at the top of the visible game container instead of appearing partway down
 
 **GuiController.java** (`src/main/java/com/comp2042/controller/GuiController.java`)
-- **Refactoring**: Extracted keyboard input handling logic into InputHandler class
+- **Refactoring**: Extracted keyboard input handling logic and color mapping logic into InputHandler class and ColorMapper class
 - **Changes Made**:
   - Removed keyboard event handling code from `initialize()` method (previously lines 68-93)
   - Now delegates keyboard input to `InputHandler` instance
   - Implements `InputHandler.BrickDisplayUpdater` interface to receive display update callbacks
   - Simplified `initialize()` method to only set up input handler delegation
+  - Removed inline color switch and now uses `ColorMapper.getColorForValue(...)` for all rectangles
 - **Rationale**: 
   - Follows Single Responsibility Principle - GuiController now focuses on display/UI logic
   - Input handling is separated into its own class for better organization and testability
-  - Reduces complexity of GuiController class
+  - Reduces complexity of GuiController class and delegates color concerns to ColorMapper
 - **Impact**: 
   - Cleaner code structure with better separation of concerns
   - Input handling logic can now be tested independently
-  - Easier to modify input behavior without touching display code
+  - Easier to modify input behavior or color themes without touching display code
 
 **Package Reorganization**
 - **Before**: All classes were in a single `com.comp2042` package
