@@ -23,6 +23,7 @@ import com.comp2042.events.MoveEvent;
 import com.comp2042.view.ColorMapper;
 import com.comp2042.view.GameOverPanel;
 import com.comp2042.view.NotificationPanel;
+import com.comp2042.view.PausePanel;
 import com.comp2042.view.ViewData;
 
 public class GuiController implements Initializable, InputHandler.BrickDisplayUpdater {
@@ -40,6 +41,8 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
 
     @FXML
     private GameOverPanel gameOverPanel;
+
+    private PausePanel pausePanel;
 
     private Rectangle[][] displayMatrix;
 
@@ -71,6 +74,9 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         });
         
         gameOverPanel.setVisible(false);
+        pausePanel = new PausePanel();
+        pausePanel.setVisible(false);
+        groupNotification.getChildren().add(pausePanel);
 
         final Reflection reflection = new Reflection();
         reflection.setFraction(0.8);
@@ -157,6 +163,7 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     public void newGame() {
         animationController.stop();
         gameOverPanel.setVisible(false);
+        pausePanel.setVisible(false);
         eventListener.createNewGame();
         gamePanel.requestFocus();
         animationController.start();
@@ -207,7 +214,23 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         newGame();
     }
 
-    public void pauseGame(ActionEvent actionEvent) {
+    @Override
+    public void pauseGame() {
+        if (isGameOver.getValue() == Boolean.FALSE) {
+            if (isPause.getValue() == Boolean.FALSE) {
+                animationController.stop();
+                pausePanel.setVisible(true);
+                isPause.setValue(Boolean.TRUE);
+            } else {
+                pausePanel.setVisible(false);
+                animationController.start();
+                isPause.setValue(Boolean.FALSE);
+            }
+        }
         gamePanel.requestFocus();
+    }
+
+    public void pauseGame(ActionEvent actionEvent) {
+        pauseGame();
     }
 }

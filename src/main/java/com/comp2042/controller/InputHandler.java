@@ -28,6 +28,7 @@ public class InputHandler {
         void refreshBrick(ViewData brick);
         void moveDown(MoveEvent event);
         void newGame();
+        void pauseGame();
     }
     
     /**
@@ -95,6 +96,11 @@ public class InputHandler {
         // Handle new game key (works even when paused/game over)
         if (keyEvent.getCode() == KeyCode.N) {
             displayUpdater.newGame();
+        }
+        
+        // Handle pause key (works when not game over)
+        if (keyEvent.getCode() == KeyCode.P && isGameOver.getValue() == Boolean.FALSE) {
+            displayUpdater.pauseGame();
         }
     }
 }

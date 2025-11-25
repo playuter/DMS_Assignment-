@@ -42,7 +42,9 @@ Fixed Tetris blocks spawning position - blocks now fall from the top of the cont
 Refactored classes into logical packages (controller, model, view, events, data, gameLogic) <br>
 Extracted input handling logic from GuiController into separate InputHandler class<br>
 Centralized block color mapping via new ColorMapper utility (removes color logic from GuiController)<br>
-Extracted animation/timeline management from GuiController into separate AnimationController class
+Extracted animation/timeline management from GuiController into separate AnimationController class<br>
+Implemented pause game functionality using 'P' key and new PausePanel
+
 
 ### Implemented but Not Working Properly
 
@@ -61,6 +63,7 @@ Extracted animation/timeline management from GuiController into separate Animati
   - Checks game state (paused/game over) before processing input
   - Delegates game logic events to GameController
   - Updates display via callback interface (BrickDisplayUpdater)
+  - Handles pause game request ('P' key)
 - **Design Pattern**: Uses callback interface pattern to avoid circular dependencies between InputHandler and GuiController
 - **Benefits**: Separates input handling from display logic, follows Single Responsibility Principle, improves testability
 
@@ -85,6 +88,15 @@ Extracted animation/timeline management from GuiController into separate Animati
   - Follows Single Responsibility Principle
   - Animation logic can be tested independently
 
+**PausePanel.java** (`src/main/java/com/comp2042/view/PausePanel.java`)
+- **Purpose**: Displays a "PAUSED" message when the game is paused
+- **Responsibilities**: 
+  - Creates a UI panel with styled "PAUSED" text
+  - Extends `BorderPane` for consistent layout
+- **Benefits**: 
+  - Dedicated view component for pause state
+  - Reuses existing styles for visual consistency
+
 ### Modified Java Classes
 
 **SimpleBoard.java** (`src/main/java/com/comp2042/model/SimpleBoard.java`)
@@ -102,6 +114,8 @@ Extracted animation/timeline management from GuiController into separate Animati
   - Removed inline color switch and now uses `ColorMapper.getColorForValue(...)` for all rectangles
   - Simplified `initialize()` method to only set up delegation to specialized classes
   - Replaced direct Timeline calls (`timeLine.play()`, `timeLine.stop()`) with `AnimationController` methods
+  - Added `PausePanel` and implemented pause logic (toggle state, show/hide panel, stop/start animation)
+  - Added `pauseGame` method to handle pause requests
 - **Rationale**: 
   - Follows Single Responsibility Principle - GuiController now focuses solely on display/UI coordination
   - Input handling, animation control, and color mapping are separated into their own classes
