@@ -41,7 +41,8 @@ Background image restored after layout update <br>
 Fixed Tetris blocks spawning position - blocks now fall from the top of the container instead of appearing partway down <br>
 Refactored classes into logical packages (controller, model, view, events, data, gameLogic) <br>
 Extracted input handling logic from GuiController into separate InputHandler class<br>
-Centralized block color mapping via new ColorMapper utility (removes color logic from GuiController)
+Centralized block color mapping via new ColorMapper utility (removes color logic from GuiController)<br>
+Extracted animation/timeline management from GuiController into separate AnimationController class
 
 ### Implemented but Not Working Properly
 
@@ -70,6 +71,20 @@ Centralized block color mapping via new ColorMapper utility (removes color logic
   - Offers `getTransparentColor()` helper for empty cells
 - **Benefits**: Removes color-switch logic from `GuiController`, keeps theme/color updates in one place, simplifies future refactors and testing
 
+**AnimationController.java** (`src/main/java/com/comp2042/controller/AnimationController.java`)
+- **Purpose**: Manages the automatic falling animation timeline for Tetris pieces
+- **Responsibilities**:
+  - Encapsulates JavaFX Timeline creation and management
+  - Controls start/stop of automatic piece falling animation
+  - Configurable fall speed (default 400ms, can be changed for difficulty levels)
+  - Executes callback on each animation tick
+- **Design Pattern**: Uses callback pattern (Runnable) to execute game logic on each tick
+- **Benefits**: 
+  - Separates animation control from display logic
+  - Makes fall speed configurable (useful for difficulty levels)
+  - Follows Single Responsibility Principle
+  - Animation logic can be tested independently
+
 ### Modified Java Classes
 
 **SimpleBoard.java** (`src/main/java/com/comp2042/model/SimpleBoard.java`)
@@ -78,21 +93,25 @@ Centralized block color mapping via new ColorMapper utility (removes color logic
 - Blocks now spawn at the top of the visible game container instead of appearing partway down
 
 **GuiController.java** (`src/main/java/com/comp2042/controller/GuiController.java`)
-- **Refactoring**: Extracted keyboard input handling logic and color mapping logic into InputHandler class and ColorMapper class
+- **Refactoring**: Extracted multiple responsibilities into separate classes (InputHandler, ColorMapper, AnimationController)
 - **Changes Made**:
   - Removed keyboard event handling code from `initialize()` method (previously lines 68-93)
   - Now delegates keyboard input to `InputHandler` instance
   - Implements `InputHandler.BrickDisplayUpdater` interface to receive display update callbacks
-  - Simplified `initialize()` method to only set up input handler delegation
+  - Removed Timeline management code - now uses `AnimationController` for automatic falling
   - Removed inline color switch and now uses `ColorMapper.getColorForValue(...)` for all rectangles
+  - Simplified `initialize()` method to only set up delegation to specialized classes
+  - Replaced direct Timeline calls (`timeLine.play()`, `timeLine.stop()`) with `AnimationController` methods
 - **Rationale**: 
-  - Follows Single Responsibility Principle - GuiController now focuses on display/UI logic
-  - Input handling is separated into its own class for better organization and testability
-  - Reduces complexity of GuiController class and delegates color concerns to ColorMapper
+  - Follows Single Responsibility Principle - GuiController now focuses solely on display/UI coordination
+  - Input handling, animation control, and color mapping are separated into their own classes
+  - Reduces complexity of GuiController class significantly
+  - Each extracted class can be tested and modified independently
 - **Impact**: 
-  - Cleaner code structure with better separation of concerns
-  - Input handling logic can now be tested independently
-  - Easier to modify input behavior or color themes without touching display code
+  - Much cleaner code structure with clear separation of concerns
+  - GuiController is now more maintainable and easier to understand
+  - Individual components (input, animation, colors) can be modified without affecting others
+  - Better foundation for adding features like difficulty levels (via AnimationController speed control)
 
 **Package Reorganization**
 - **Before**: All classes were in a single `com.comp2042` package

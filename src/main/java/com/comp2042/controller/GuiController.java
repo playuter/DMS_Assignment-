@@ -1,7 +1,5 @@
 package com.comp2042.controller;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -13,7 +11,6 @@ import javafx.scene.effect.Reflection;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -50,7 +47,7 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
 
     private Rectangle[][] rectangles;
 
-    private Timeline timeLine;
+    private AnimationController animationController;
 
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
@@ -106,11 +103,11 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         brickPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap()
                 + brick.getyPosition() * BRICK_SIZE);
 
-        timeLine = new Timeline(new KeyFrame(
-                Duration.millis(400),
-                ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))));
-        timeLine.setCycleCount(Timeline.INDEFINITE);
-        timeLine.play();
+        // Initialize animation controller for automatic falling
+        animationController = new AnimationController(
+            () -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
+        );
+        animationController.start();
     }
 
 
@@ -158,11 +155,11 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
      */
     @Override
     public void newGame() {
-        timeLine.stop();
+        animationController.stop();
         gameOverPanel.setVisible(false);
         eventListener.createNewGame();
         gamePanel.requestFocus();
-        timeLine.play();
+        animationController.start();
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
     }
@@ -197,7 +194,7 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     }
 
     public void gameOver() {
-        timeLine.stop();
+        animationController.stop();
         gameOverPanel.setVisible(true);
         isGameOver.setValue(Boolean.TRUE);
     }
