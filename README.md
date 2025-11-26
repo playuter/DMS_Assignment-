@@ -43,12 +43,16 @@ Refactored classes into logical packages (controller, model, view, events, data,
 Extracted input handling logic from GuiController into separate InputHandler class<br>
 Centralized block color mapping via new ColorMapper utility (removes color logic from GuiController)<br>
 Extracted animation/timeline management from GuiController into separate AnimationController class<br>
-Implemented pause game functionality using 'P' key and new PausePanel
+Implemented pause game functionality using 'P' key and new PausePanel<br>
+
 
 
 ### Implemented but Not Working Properly
 
-(Will update as development continues)
+**Live Wallpaper Resizing**:
+- The live video background (`liveWallpaper.mp4`) plays correctly but does not automatically resize when the game window is resized.
+- **Issue**: `MediaView` does not automatically scale to fit its parent container like CSS background images do.
+- **Potential Fix**: Bind `fitWidth` and `fitHeight` of the `MediaView` to the scene or root container properties in `GuiController.initialize()`.
 
 ### Features Not Implemented
 
@@ -116,6 +120,7 @@ Implemented pause game functionality using 'P' key and new PausePanel
   - Replaced direct Timeline calls (`timeLine.play()`, `timeLine.stop()`) with `AnimationController` methods
   - Added `PausePanel` and implemented pause logic (toggle state, show/hide panel, stop/start animation)
   - Added `pauseGame` method to handle pause requests
+  - Integrated `MediaView` to play `liveWallpaper.mp4` as the game background
 - **Rationale**: 
   - Follows Single Responsibility Principle - GuiController now focuses solely on display/UI coordination
   - Input handling, animation control, and color mapping are separated into their own classes
@@ -151,3 +156,6 @@ Implemented pause game functionality using 'P' key and new PausePanel
 JavaFX + Maven setup required fixing compiler target compatibility
 
 Java path / JAVA_HOME configuration issues resolved
+
+Background completely broke when changing to live background
+when resizing the background does not resize along with the game window

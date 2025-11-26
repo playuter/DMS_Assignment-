@@ -9,6 +9,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.effect.Reflection;
 import javafx.scene.layout.GridPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 
@@ -41,6 +44,9 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
 
     @FXML
     private GameOverPanel gameOverPanel;
+
+    @FXML
+    private MediaView backgroundMediaView;
 
     private PausePanel pausePanel;
 
@@ -77,6 +83,23 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         pausePanel = new PausePanel();
         pausePanel.setVisible(false);
         groupNotification.getChildren().add(pausePanel);
+        
+        // Initialize Live Wallpaper
+        try {
+            URL mediaUrl = getClass().getClassLoader().getResource("liveWallpaper.mp4");
+            if (mediaUrl != null) {
+                Media media = new Media(mediaUrl.toExternalForm());
+                MediaPlayer mediaPlayer = new MediaPlayer(media);
+                mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+                mediaPlayer.setAutoPlay(true);
+                backgroundMediaView.setMediaPlayer(mediaPlayer);
+            } else {
+                System.err.println("Could not find liveWallpaper.mp4");
+            }
+        } catch (Exception e) {
+            System.err.println("Error loading live wallpaper: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         final Reflection reflection = new Reflection();
         reflection.setFraction(0.8);

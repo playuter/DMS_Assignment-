@@ -5,13 +5,13 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.media.MediaView?>
 <?import java.net.URL?>
 
 <StackPane fx:controller="com.comp2042.controller.GuiController"
-           xmlns:fx="http://javafx.com/fxml"
-           style="-fx-background-image: url('background_image.png');
-                  -fx-background-size: cover;">
+           xmlns:fx="http://javafx.com/fxml">
 
+    <MediaView fx:id="backgroundMediaView" fitWidth="400" fitHeight="600" preserveRatio="false"/>
 
     <Pane maxWidth="300" maxHeight="510"
           prefWidth="300" prefHeight="510"
