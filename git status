@@ -1,0 +1,62 @@
+[1mdiff --git a/README.md b/README.md[m
+[1mindex 1cd9387..9dbbb4f 100644[m
+[1m--- a/README.md[m
+[1m+++ b/README.md[m
+[36m@@ -60,6 +60,15 @@[m [mImplemented pause game functionality using 'P' key and new PausePanel<br>[m
+ [m
+ ### New Java Classes[m
+ [m
+[32m+[m[32m**MainMenuController.java** (`src/main/java/com/comp2042/controller/MainMenuController.java`)[m
+[32m+[m[32m- **Purpose**: Controls the main menu logic[m
+[32m+[m[32m- **Responsibilities**:[m[41m [m
+[32m+[m[32m  - Loads the game scene when "Start Game" is clicked[m
+[32m+[m[32m  - Exits the application when "Exit" is clicked[m
+[32m+[m[32m- **Benefits**:[m[41m [m
+[32m+[m[32m  - Provides a clear entry point for the user[m
+[32m+[m[32m  - Separates menu logic from game logic[m
+[32m+[m
+ **InputHandler.java** (`src/main/java/com/comp2042/controller/InputHandler.java`)[m
+ - **Purpose**: Handles all keyboard input processing for the Tetris game[m
+ - **Responsibilities**: [m
+[36m@@ -132,6 +141,10 @@[m [mImplemented pause game functionality using 'P' key and new PausePanel<br>[m
+   - Individual components (input, animation, colors) can be modified without affecting others[m
+   - Better foundation for adding features like difficulty levels (via AnimationController speed control)[m
+ [m
+[32m+[m[32m**Main.java** (`src/main/java/com/comp2042/Main.java`)[m
+[32m+[m[32m- **Changes**: Updated `start()` method to load `MainMenu.fxml` instead of `gameLayout.fxml` on startup[m
+[32m+[m[32m- **Impact**: Application now launches into the main menu[m
+[32m+[m
+ **Package Reorganization**[m
+ - **Before**: All classes were in a single `com.comp2042` package[m
+ - **After**: Classes organized into logical packages:[m
+[1mdiff --git a/src/main/java/com/comp2042/Main.java b/src/main/java/com/comp2042/Main.java[m
+[1mindex c27ac27..5ef9104 100644[m
+[1m--- a/src/main/java/com/comp2042/Main.java[m
+[1m+++ b/src/main/java/com/comp2042/Main.java[m
+[36m@@ -9,25 +9,20 @@[m [mimport javafx.stage.Stage;[m
+ import java.net.URL;[m
+ import java.util.ResourceBundle;[m
+ [m
+[31m-import com.comp2042.controller.GameController;[m
+[31m-import com.comp2042.controller.GuiController;[m
+[31m-[m
+ public class Main extends Application {[m
+ [m
+     @Override[m
+     public void start(Stage primaryStage) throws Exception {[m
+ [m
+[31m-        URL location = getClass().getClassLoader().getResource("gameLayout.fxml");[m
+[32m+[m[32m        URL location = getClass().getClassLoader().getResource("MainMenu.fxml");[m
+         ResourceBundle resources = null;[m
+         FXMLLoader fxmlLoader = new FXMLLoader(location, resources);[m
+         Parent root = fxmlLoader.load();[m
+[31m-        GuiController c = fxmlLoader.getController();[m
+ [m
+         primaryStage.setTitle("TetrisJFX");[m
+         Scene scene = new Scene(root, 300, 510);[m
+         primaryStage.setScene(scene);[m
+         primaryStage.show();[m
+[31m-        new GameController(c);[m
+     }[m
+ [m
+     public static void main(String[] args) {[m

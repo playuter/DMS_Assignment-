@@ -60,6 +60,15 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 
 ### New Java Classes
 
+**MainMenuController.java** (`src/main/java/com/comp2042/controller/MainMenuController.java`)
+- **Purpose**: Controls the main menu logic
+- **Responsibilities**: 
+  - Loads the game scene when "Start Game" is clicked
+  - Exits the application when "Exit" is clicked
+- **Benefits**: 
+  - Provides a clear entry point for the user
+  - Separates menu logic from game logic
+
 **InputHandler.java** (`src/main/java/com/comp2042/controller/InputHandler.java`)
 - **Purpose**: Handles all keyboard input processing for the Tetris game
 - **Responsibilities**: 
@@ -131,6 +140,10 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - GuiController is now more maintainable and easier to understand
   - Individual components (input, animation, colors) can be modified without affecting others
   - Better foundation for adding features like difficulty levels (via AnimationController speed control)
+
+**Main.java** (`src/main/java/com/comp2042/Main.java`)
+- **Changes**: Updated `start()` method to load `MainMenu.fxml` instead of `gameLayout.fxml` on startup
+- **Impact**: Application now launches into the main menu
 
 **Package Reorganization**
 - **Before**: All classes were in a single `com.comp2042` package
