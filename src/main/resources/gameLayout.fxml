@@ -17,6 +17,7 @@
           prefWidth="300" prefHeight="510"
           minWidth="300" minHeight="510">
 
+        <GridPane fx:id="shadowPanel" vgap="1" hgap="1" opacity="0.3"/>
         <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
         
         <VBox layoutX="20" layoutY="20">

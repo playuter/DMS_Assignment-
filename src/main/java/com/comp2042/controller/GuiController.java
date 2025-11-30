@@ -45,6 +45,9 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     private GridPane brickPanel;
 
     @FXML
+    private GridPane shadowPanel;
+
+    @FXML
     private GameOverPanel gameOverPanel;
 
     @FXML
@@ -60,6 +63,7 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     private InputEventListener eventListener;
 
     private Rectangle[][] rectangles;
+    private Rectangle[][] shadowRectangles;
 
     private AnimationController animationController;
 
@@ -124,18 +128,32 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         }
 
         rectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
+        shadowRectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
+        
         for (int i = 0; i < brick.getBrickData().length; i++) {
             for (int j = 0; j < brick.getBrickData()[i].length; j++) {
                 Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
                 rectangle.setFill(ColorMapper.getColorForValue(brick.getBrickData()[i][j]));
                 rectangles[i][j] = rectangle;
                 brickPanel.add(rectangle, j, i);
+                
+                // Init shadow rectangles
+                Rectangle shadowRec = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                shadowRec.setFill(ColorMapper.getColorForValue(brick.getBrickData()[i][j]));
+                shadowRec.setOpacity(0.3); // Make it semi-transparent
+                shadowRectangles[i][j] = shadowRec;
+                shadowPanel.add(shadowRec, j, i);
             }
         }
         brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap()
                 + brick.getxPosition() * BRICK_SIZE);
         brickPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap()
                 + brick.getyPosition() * BRICK_SIZE);
+                
+        // Set initial shadow position
+        shadowPanel.setLayoutX(brickPanel.getLayoutX());
+        shadowPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getShadowY() * brickPanel.getHgap()
+                + brick.getShadowY() * BRICK_SIZE);
 
         // Initialize animation controller for automatic falling
         animationController = new AnimationController(
@@ -156,9 +174,16 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
                     + brick.getxPosition() * BRICK_SIZE);
             brickPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap()
                     + brick.getyPosition() * BRICK_SIZE);
+            
+            // Update shadow position and shape
+            shadowPanel.setLayoutX(brickPanel.getLayoutX());
+            shadowPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getShadowY() * brickPanel.getHgap()
+                    + brick.getShadowY() * BRICK_SIZE);
+                    
             for (int i = 0; i < brick.getBrickData().length; i++) {
                 for (int j = 0; j < brick.getBrickData()[i].length; j++) {
                     setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
+                    setRectangleData(brick.getBrickData()[i][j], shadowRectangles[i][j]);
                 }
             }
         }
