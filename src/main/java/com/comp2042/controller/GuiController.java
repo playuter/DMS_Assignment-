@@ -30,10 +30,12 @@ import com.comp2042.view.GameOverPanel;
 import com.comp2042.view.NotificationPanel;
 import com.comp2042.view.PausePanel;
 import com.comp2042.view.ViewData;
+import com.comp2042.logic.leaderboard.LeaderboardManager;
 
 public class GuiController implements Initializable, InputHandler.BrickDisplayUpdater {
 
     private static final int BRICK_SIZE = 20;
+    private String playerName = "Guest";
 
     @FXML
     private GridPane gamePanel;
@@ -288,10 +290,23 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         scoreValue.textProperty().bind(integerProperty.asString());
     }
 
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
     public void gameOver() {
         animationController.stop();
         gameOverPanel.setVisible(true);
         isGameOver.setValue(Boolean.TRUE);
+        
+        // Save score to leaderboard
+        try {
+            int finalScore = Integer.parseInt(scoreValue.getText());
+            LeaderboardManager.getInstance().addScore(playerName, finalScore);
+            System.out.println("Score saved for " + playerName + ": " + finalScore);
+        } catch (NumberFormatException e) {
+            System.err.println("Error parsing score for leaderboard: " + e.getMessage());
+        }
     }
 
     /**

@@ -60,11 +60,25 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 
 ### New Java Classes
 
+**LeaderboardManager.java** (`src/main/java/com/comp2042/logic/leaderboard/LeaderboardManager.java`)
+- **Purpose**: Manages the persistent leaderboard state
+- **Responsibilities**:
+  - Loads/saves scores to disk
+  - Maintains top 50 high scores
+  - Provides methods to add and retrieve scores
+- **Benefits**: Encapsulates file I/O and score logic
+
+**PlayerScore.java** (`src/main/java/com/comp2042/logic/leaderboard/PlayerScore.java`)
+- **Purpose**: Data class representing a single score entry
+- **Responsibilities**: Stores name, score, and sorting logic (Comparable)
+
 **MainMenuController.java** (`src/main/java/com/comp2042/controller/MainMenuController.java`)
 - **Purpose**: Controls the main menu logic
 - **Responsibilities**: 
   - Loads the game scene when "Start Game" is clicked
   - Exits the application when "Exit" is clicked
+  - Handles player name input before starting game
+  - Displays the leaderboard via a dialog
 - **Benefits**: 
   - Provides a clear entry point for the user
   - Separates menu logic from game logic
@@ -151,6 +165,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Implemented `bindScore` method to update the score display in the UI
   - Added `shadowPanel` and rendering logic for shadow blocks
   - Added `nextBrickPanel` and logic to render the next 3 upcoming bricks
+  - Added logic to save player scores to the leaderboard on game over
 - **Rationale**: 
   - Follows Single Responsibility Principle - GuiController now focuses solely on display/UI coordination
   - Input handling, animation control, and color mapping are separated into their own classes
