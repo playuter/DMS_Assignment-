@@ -48,6 +48,9 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     private GridPane shadowPanel;
 
     @FXML
+    private GridPane nextBrickPanel;
+    
+    @FXML
     private GameOverPanel gameOverPanel;
 
     @FXML
@@ -155,6 +158,8 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         shadowPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getShadowY() * brickPanel.getHgap()
                 + brick.getShadowY() * BRICK_SIZE);
 
+        refreshNextBricks(brick);
+        
         // Initialize animation controller for automatic falling
         animationController = new AnimationController(
             () -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
@@ -186,6 +191,35 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
                     setRectangleData(brick.getBrickData()[i][j], shadowRectangles[i][j]);
                 }
             }
+            refreshNextBricks(brick);
+        }
+    }
+    
+    private void refreshNextBricks(ViewData brick) {
+        if (nextBrickPanel == null) return;
+        nextBrickPanel.getChildren().clear();
+        
+        java.util.List<int[][]> nextBricks = brick.getNextBricksData();
+        if (nextBricks == null) return;
+        
+        for (int k = 0; k < nextBricks.size(); k++) {
+            int[][] nextBrickData = nextBricks.get(k);
+            GridPane singleBrickContainer = new GridPane();
+            singleBrickContainer.setHgap(1);
+            singleBrickContainer.setVgap(1);
+            
+            for (int i = 0; i < nextBrickData.length; i++) {
+                for (int j = 0; j < nextBrickData[i].length; j++) {
+                    if (nextBrickData[i][j] != 0) {
+                        Rectangle rectangle = new Rectangle(15, 15); // Smaller size for preview
+                        rectangle.setFill(ColorMapper.getColorForValue(nextBrickData[i][j]));
+                        rectangle.setArcWidth(5);
+                        rectangle.setArcHeight(5);
+                        singleBrickContainer.add(rectangle, j, i);
+                    }
+                }
+            }
+            nextBrickPanel.add(singleBrickContainer, 0, k);
         }
     }
     

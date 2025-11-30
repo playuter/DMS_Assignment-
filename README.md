@@ -121,11 +121,19 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Fixed initial block spawn position
   - Implemented `calculateShadowY()` to determine ghost piece position
   - Updated `getViewData()` to include shadow position
-- **Impact**: Blocks spawn correctly, and view receives data needed to render shadow blocks
+- **Impact**: Blocks spawn correctly, and view receives data needed to render shadow blocks and next pieces preview
 
 **ViewData.java** (`src/main/java/com/comp2042/view/ViewData.java`)
-- **Changes**: Added `shadowY` field and constructor parameter
-- **Impact**: Carries shadow position data from Model to View
+- **Changes**: 
+  - Added `shadowY` field and constructor parameter
+  - Added `nextBricksData` list to hold matrices for upcoming pieces
+- **Impact**: Carries shadow position and next pieces queue from Model to View
+
+**BrickGenerator.java / RandomBrickGenerator.java**
+- **Changes**: 
+  - Updated interface to include `getNextBricks()`
+  - Implemented queue-based brick generation (maintains a buffer of upcoming bricks)
+- **Impact**: Enables the game to look ahead and display multiple upcoming pieces
 
 **GuiController.java** (`src/main/java/com/comp2042/controller/GuiController.java`)
 - **Refactoring**: Extracted multiple responsibilities into separate classes (InputHandler, ColorMapper, AnimationController)
@@ -142,6 +150,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Integrated `MediaView` to play `liveWallpaper.mp4` as the game background
   - Implemented `bindScore` method to update the score display in the UI
   - Added `shadowPanel` and rendering logic for shadow blocks
+  - Added `nextBrickPanel` and logic to render the next 3 upcoming bricks
 - **Rationale**: 
   - Follows Single Responsibility Principle - GuiController now focuses solely on display/UI coordination
   - Input handling, animation control, and color mapping are separated into their own classes
