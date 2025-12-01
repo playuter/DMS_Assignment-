@@ -37,6 +37,13 @@ public class LeaderboardManager {
         return Collections.unmodifiableList(scores);
     }
 
+    public int getHighestScore() {
+        if (scores.isEmpty()) {
+            return 0;
+        }
+        return scores.get(0).getScore();
+    }
+
     @SuppressWarnings("unchecked")
     private void loadScores() {
         File file = new File(FILE_PATH);

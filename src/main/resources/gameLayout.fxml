@@ -24,6 +24,8 @@
             <VBox layoutX="20" layoutY="20">
                  <Label text="SCORE" styleClass="scoreClass" style="-fx-font-size: 20;"/>
                  <Text fx:id="scoreValue" text="0" styleClass="scoreClass"/>
+                 <Label text="HIGH SCORE" styleClass="scoreClass" style="-fx-font-size: 16; -fx-padding: 10 0 0 0;"/>
+                 <Text fx:id="highScoreValue" text="0" styleClass="scoreClass" style="-fx-font-size: 16;"/>
             </VBox>
 
         <BorderPane styleClass="gameBoard" fx:id="gameBoard">

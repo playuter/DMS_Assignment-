@@ -61,6 +61,9 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     @FXML
     private Text scoreValue;
 
+    @FXML
+    private Text highScoreValue;
+
     private PausePanel pausePanel;
 
     private Rectangle[][] displayMatrix;
@@ -119,6 +122,12 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         reflection.setFraction(0.8);
         reflection.setTopOpacity(0.9);
         reflection.setTopOffset(-12);
+        
+        // Initialize High Score
+        int currentHighScore = LeaderboardManager.getInstance().getHighestScore();
+        if (highScoreValue != null) {
+            highScoreValue.setText(String.valueOf(currentHighScore));
+        }
     }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
@@ -288,6 +297,15 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
 
     public void bindScore(IntegerProperty integerProperty) {
         scoreValue.textProperty().bind(integerProperty.asString());
+        
+        // Add listener to update high score in real-time if beaten
+        integerProperty.addListener((obs, oldVal, newVal) -> {
+            int currentScore = newVal.intValue();
+            int highScore = Integer.parseInt(highScoreValue.getText());
+            if (currentScore > highScore) {
+                highScoreValue.setText(String.valueOf(currentScore));
+            }
+        });
     }
 
     public void setPlayerName(String playerName) {
