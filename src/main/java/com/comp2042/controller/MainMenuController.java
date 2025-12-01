@@ -72,6 +72,32 @@ public class MainMenuController implements Initializable {
     }
 
     @FXML
+    public void showHowToPlay(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("How to Play Tetris");
+        alert.setHeaderText("Game Instructions & Controls");
+        
+        String instructions = 
+            "Objective:\n" +
+            "Arrange falling blocks to form complete horizontal lines.\n" +
+            "Completed lines disappear and earn you points.\n" +
+            "Don't let the blocks stack up to the top!\n\n" +
+            "Controls:\n" +
+            "← / → : Move block Left / Right\n" +
+            "↑ : Rotate block\n" +
+            "↓ : Soft Drop (Accelerate fall)\n" +
+            "SPACE : Hard Drop (Instant fall)\n" +
+            "P : Pause / Resume Game\n\n" +
+            "Scoring:\n" +
+            "Clear lines to increase your score.\n" +
+            "Try to beat the High Score!";
+            
+        alert.setContentText(instructions);
+        alert.getDialogPane().setMinWidth(400);
+        alert.showAndWait();
+    }
+
+    @FXML
     public void showLevels(ActionEvent event) {
         List<String> choices = new ArrayList<>();
         choices.add("Normal");

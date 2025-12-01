@@ -80,6 +80,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Handles player name input before starting game
   - Displays the leaderboard via a dialog
   - Allows difficulty level selection (Normal/Extra/Insane) via a dialog
+  - Displays game instructions and controls via a dialog
 - **Benefits**: 
   - Provides a clear entry point for the user
   - Separates menu logic from game logic
