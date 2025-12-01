@@ -82,6 +82,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Allows difficulty level selection (Normal/Extra/Insane) via a dialog
   - Displays game instructions and controls via a dialog
   - Animates cleared rows before removing them
+  - Animates score display on hitting milestones
 - **Benefits**: 
   - Provides a clear entry point for the user
   - Separates menu logic from game logic

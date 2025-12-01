@@ -333,8 +333,44 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
             int highScore = Integer.parseInt(highScoreValue.getText());
             if (currentScore > highScore) {
                 highScoreValue.setText(String.valueOf(currentScore));
+                animateScore(highScoreValue); // Animate high score when beaten
+            }
+            
+            // Check for milestones (100, 250, 500, 1000 and their multiples)
+            if (isMilestone(currentScore)) {
+                animateScore(scoreValue);
             }
         });
+    }
+
+    private boolean isMilestone(int score) {
+        if (score == 0) return false;
+        return (score % 1000 == 0) || 
+               (score % 500 == 0) || 
+               (score % 250 == 0) || 
+               (score % 100 == 0);
+    }
+
+    public void animateScore() {
+        animateScore(scoreValue);
+    }
+
+    private void animateScore(Text target) {
+        javafx.animation.ScaleTransition st = new javafx.animation.ScaleTransition(
+            javafx.util.Duration.millis(200), target
+        );
+        st.setFromX(1.0);
+        st.setFromY(1.0);
+        st.setToX(1.5);
+        st.setToY(1.5);
+        st.setCycleCount(2);
+        st.setAutoReverse(true);
+        st.play();
+        
+        // Optional: Add a color flash effect
+        javafx.scene.effect.Glow glow = new javafx.scene.effect.Glow(0.8);
+        target.setEffect(glow);
+        st.setOnFinished(e -> target.setEffect(null));
     }
 
     public void setPlayerName(String playerName) {

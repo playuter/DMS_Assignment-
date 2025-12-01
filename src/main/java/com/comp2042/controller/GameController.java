@@ -42,6 +42,12 @@ public class GameController implements InputEventListener {
                 
                 // Animate clearing then continue game loop
                 final ClearRow finalClearRow = clearRow;
+                
+                // Trigger score animation if more than 1 line cleared
+                if (finalClearRow.getLinesRemoved() > 1) {
+                    viewGuiController.animateScore();
+                }
+                
                 viewGuiController.animateClearRows(finalClearRow.getClearedRows(), () -> {
                     if (board.createNewBrick()) {
                         viewGuiController.gameOver();
