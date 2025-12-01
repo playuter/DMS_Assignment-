@@ -112,6 +112,10 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 
 ### Modified Java Classes
 
+**GameController.java** (`src/main/java/com/comp2042/controller/GameController.java`)
+- **Changes**: Removed logic that incremented score by 1 for every manual down movement
+- **Impact**: Prevents players from farming score by repeatedly tapping down key; score now reflects only cleared lines
+
 **SimpleBoard.java** (`src/main/java/com/comp2042/model/SimpleBoard.java`)
 - Fixed initial block spawn position in `createNewBrick()` method
 - Changed initial y-position from `10` to `2` (line 88)
@@ -130,6 +134,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Added `PausePanel` and implemented pause logic (toggle state, show/hide panel, stop/start animation)
   - Added `pauseGame` method to handle pause requests
   - Integrated `MediaView` to play `liveWallpaper.mp4` as the game background
+  - Implemented `bindScore` method to update the score display in the UI
 - **Rationale**: 
   - Follows Single Responsibility Principle - GuiController now focuses solely on display/UI coordination
   - Input handling, animation control, and color mapping are separated into their own classes

@@ -15,6 +15,8 @@ import javafx.scene.media.MediaView;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 
+import javafx.scene.text.Text;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -47,6 +49,9 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
 
     @FXML
     private MediaView backgroundMediaView;
+
+    @FXML
+    private Text scoreValue;
 
     private PausePanel pausePanel;
 
@@ -221,6 +226,7 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     }
 
     public void bindScore(IntegerProperty integerProperty) {
+        scoreValue.textProperty().bind(integerProperty.asString());
     }
 
     public void gameOver() {

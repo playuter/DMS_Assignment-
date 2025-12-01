@@ -2,7 +2,6 @@ package com.comp2042.controller;
 
 import com.comp2042.data.ClearRow;
 import com.comp2042.data.DownData;
-import com.comp2042.events.EventSource;
 import com.comp2042.events.InputEventListener;
 import com.comp2042.events.MoveEvent;
 import com.comp2042.model.Board;
@@ -38,11 +37,7 @@ public class GameController implements InputEventListener {
             }
 
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
-
-        } else {
-            if (event.getEventSource() == EventSource.USER) {
-                board.getScore().add(1);
-            }
+            
         }
         return new DownData(clearRow, board.getViewData());
     }

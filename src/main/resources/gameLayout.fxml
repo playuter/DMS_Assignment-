@@ -18,6 +18,11 @@
           minWidth="300" minHeight="510">
 
         <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
+        
+        <VBox layoutX="20" layoutY="20">
+             <Label text="SCORE" styleClass="scoreClass" style="-fx-font-size: 20;"/>
+             <Text fx:id="scoreValue" text="0" styleClass="scoreClass"/>
+        </VBox>
 
         <BorderPane styleClass="gameBoard" fx:id="gameBoard">
             <center>
