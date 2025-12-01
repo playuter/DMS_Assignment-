@@ -21,10 +21,16 @@ import java.util.List;
 import com.comp2042.logic.leaderboard.LeaderboardManager;
 import com.comp2042.logic.leaderboard.PlayerScore;
 
+import javafx.scene.control.ChoiceDialog;
+import java.util.ArrayList;
+import java.util.Optional;
+
 public class MainMenuController implements Initializable {
 
     @FXML
     private TextField nameInput;
+    
+    private long selectedDelay = 400; // Default 400ms (Extra)
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -52,6 +58,7 @@ public class MainMenuController implements Initializable {
             // Get the controller and set up the game
             GuiController c = loader.getController();
             c.setPlayerName(playerName);
+            c.setInitialFallSpeed(selectedDelay);
             new GameController(c); // Initialize game controller which sets up the game logic
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -62,6 +69,28 @@ public class MainMenuController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    public void showLevels(ActionEvent event) {
+        List<String> choices = new ArrayList<>();
+        choices.add("Normal");
+        choices.add("Extra");
+        choices.add("Insane");
+
+        ChoiceDialog<String> dialog = new ChoiceDialog<>("Extra", choices);
+        dialog.setTitle("Select Level");
+        dialog.setHeaderText("Choose your difficulty level:");
+        dialog.setContentText("Level:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(level -> {
+            switch (level) {
+                case "Normal": selectedDelay = 600; break;
+                case "Extra": selectedDelay = 400; break;
+                case "Insane": selectedDelay = 200; break;
+            }
+        });
     }
 
     @FXML

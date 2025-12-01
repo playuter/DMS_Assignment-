@@ -79,6 +79,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Exits the application when "Exit" is clicked
   - Handles player name input before starting game
   - Displays the leaderboard via a dialog
+  - Allows difficulty level selection (Normal/Extra/Insane) via a dialog
 - **Benefits**: 
   - Provides a clear entry point for the user
   - Separates menu logic from game logic
@@ -169,6 +170,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Added `nextBrickPanel` and logic to render the next 3 upcoming bricks
   - Added logic to save player scores to the leaderboard on game over
   - Added real-time high score tracking and display
+  - Added support for variable game speeds (difficulty levels)
 - **Rationale**: 
   - Follows Single Responsibility Principle - GuiController now focuses solely on display/UI coordination
   - Input handling, animation control, and color mapping are separated into their own classes

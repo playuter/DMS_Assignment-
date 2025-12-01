@@ -74,6 +74,7 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     private Rectangle[][] shadowRectangles;
 
     private AnimationController animationController;
+    private long initialFallSpeed = 400;
 
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
@@ -173,7 +174,8 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         
         // Initialize animation controller for automatic falling
         animationController = new AnimationController(
-            () -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
+            () -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD)),
+            initialFallSpeed
         );
         animationController.start();
     }
@@ -310,6 +312,10 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
 
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
+    }
+
+    public void setInitialFallSpeed(long speed) {
+        this.initialFallSpeed = speed;
     }
 
     public void gameOver() {

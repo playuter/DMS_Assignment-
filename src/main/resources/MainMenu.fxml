@@ -19,6 +19,7 @@
         <TextField fx:id="nameInput" promptText="Enter Name" maxWidth="200" style="-fx-font-size: 14px;"/>
         
         <Button text="Start Game" onAction="#startGame" styleClass="ipad-dark-grey" minWidth="150"/>
+        <Button text="Levels" onAction="#showLevels" styleClass="ipad-dark-grey" minWidth="150"/>
         <Button text="Leaderboard" onAction="#showLeaderboard" styleClass="ipad-dark-grey" minWidth="150"/>
         <Button text="Exit" onAction="#exitGame" styleClass="ipad-dark-grey" minWidth="150"/>
     </VBox>
