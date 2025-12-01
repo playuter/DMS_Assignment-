@@ -24,7 +24,15 @@ public class GameController implements InputEventListener {
 
     @Override
     public DownData onDownEvent(MoveEvent event) {
-        boolean canMove = board.moveBrickDown();
+        boolean canMove;
+        
+        if (event.getEventType() == com.comp2042.events.EventType.HARD_DROP) {
+            board.hardDrop();
+            canMove = false; // Force merge
+        } else {
+            canMove = board.moveBrickDown();
+        }
+        
         ClearRow clearRow = null;
         if (!canMove) {
             board.mergeBrickToBackground();

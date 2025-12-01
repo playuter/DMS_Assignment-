@@ -91,6 +91,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Delegates game logic events to GameController
   - Updates display via callback interface (BrickDisplayUpdater)
   - Handles pause game request ('P' key)
+  - Handles hard drop request ('SPACE' key)
 - **Design Pattern**: Uses callback interface pattern to avoid circular dependencies between InputHandler and GuiController
 - **Benefits**: Separates input handling from display logic, follows Single Responsibility Principle, improves testability
 
@@ -134,8 +135,9 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 - **Changes**: 
   - Fixed initial block spawn position
   - Implemented `calculateShadowY()` to determine ghost piece position
+  - Implemented `hardDrop()` to instantly move the brick to the shadow position
   - Updated `getViewData()` to include shadow position
-- **Impact**: Blocks spawn correctly, and view receives data needed to render shadow blocks and next pieces preview
+- **Impact**: Blocks spawn correctly, hard drop functionality added, and view receives data needed to render shadow blocks
 
 **ViewData.java** (`src/main/java/com/comp2042/view/ViewData.java`)
 - **Changes**: 

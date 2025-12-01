@@ -46,6 +46,12 @@ public class SimpleBoard implements Board {
         }
     }
 
+    @Override
+    public void hardDrop() {
+        int shadowY = calculateShadowY();
+        currentOffset.setLocation(currentOffset.getX(), shadowY);
+    }
+
 
     @Override
     public boolean moveBrickLeft() {
