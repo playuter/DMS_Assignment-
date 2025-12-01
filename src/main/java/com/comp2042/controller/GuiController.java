@@ -32,6 +32,12 @@ import com.comp2042.view.PausePanel;
 import com.comp2042.view.ViewData;
 import com.comp2042.logic.leaderboard.LeaderboardManager;
 
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.fxml.FXMLLoader;
+import java.io.IOException;
+
 public class GuiController implements Initializable, InputHandler.BrickDisplayUpdater {
 
     private static final int BRICK_SIZE = 20;
@@ -100,6 +106,12 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         gameOverPanel.setVisible(false);
         pausePanel = new PausePanel();
         pausePanel.setVisible(false);
+        
+        // Wire up Pause Panel buttons
+        pausePanel.getResumeButton().setOnAction(e -> pauseGame());
+        pausePanel.getRestartButton().setOnAction(e -> newGame());
+        pausePanel.getMainMenuButton().setOnAction(e -> returnToMainMenu());
+        
         groupNotification.getChildren().add(pausePanel);
         
         // Initialize Live Wallpaper
@@ -422,5 +434,18 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
 
     public void pauseGame(ActionEvent actionEvent) {
         pauseGame();
+    }
+
+    private void returnToMainMenu() {
+        try {
+            animationController.stop();
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("MainMenu.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) gamePanel.getScene().getWindow();
+            stage.setScene(new Scene(root, 300, 510));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

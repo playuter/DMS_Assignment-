@@ -124,6 +124,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 - **Purpose**: Displays a "PAUSED" message when the game is paused
 - **Responsibilities**: 
   - Creates a UI panel with styled "PAUSED" text
+  - Provides navigation buttons (Resume, Restart, Main Menu)
   - Extends `BorderPane` for consistent layout
 - **Benefits**: 
   - Dedicated view component for pause state
