@@ -39,12 +39,22 @@ public class GameController implements InputEventListener {
             clearRow = board.clearRows();
             if (clearRow.getLinesRemoved() > 0) {
                 board.getScore().add(clearRow.getScoreBonus());
+                
+                // Animate clearing then continue game loop
+                final ClearRow finalClearRow = clearRow;
+                viewGuiController.animateClearRows(finalClearRow.getClearedRows(), () -> {
+                    if (board.createNewBrick()) {
+                        viewGuiController.gameOver();
+                    }
+                    viewGuiController.refreshGameBackground(board.getBoardMatrix());
+                });
+            } else {
+                // No lines cleared, just continue
+                if (board.createNewBrick()) {
+                    viewGuiController.gameOver();
+                }
+                viewGuiController.refreshGameBackground(board.getBoardMatrix());
             }
-            if (board.createNewBrick()) {
-                viewGuiController.gameOver();
-            }
-
-            viewGuiController.refreshGameBackground(board.getBoardMatrix());
             
         }
         return new DownData(clearRow, board.getViewData());

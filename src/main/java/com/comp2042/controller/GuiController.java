@@ -274,9 +274,36 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     public void refreshGameBackground(int[][] board) {
         for (int i = 2; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
+                // Reset opacity in case it was faded out
+                displayMatrix[i][j].setOpacity(1.0);
                 setRectangleData(board[i][j], displayMatrix[i][j]);
             }
         }
+    }
+
+    public void animateClearRows(java.util.List<Integer> rows, Runnable onFinished) {
+        javafx.animation.ParallelTransition transition = new javafx.animation.ParallelTransition();
+        
+        for (Integer row : rows) {
+            if (row < 2) continue; // Skip hidden rows
+            
+            for (int col = 0; col < displayMatrix[row].length; col++) {
+                Rectangle rect = displayMatrix[row][col];
+                javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(
+                    javafx.util.Duration.millis(300), rect
+                );
+                ft.setFromValue(1.0);
+                ft.setToValue(0.0);
+                transition.getChildren().add(ft);
+            }
+        }
+        
+        transition.setOnFinished(e -> {
+            if (onFinished != null) {
+                onFinished.run();
+            }
+        });
+        transition.play();
     }
 
     private void setRectangleData(int color, Rectangle rectangle) {
