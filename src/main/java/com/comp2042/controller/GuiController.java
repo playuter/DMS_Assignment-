@@ -9,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.effect.Reflection;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -19,6 +20,7 @@ import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.List;
 
 import com.comp2042.data.DownData;
 import com.comp2042.events.EventSource;
@@ -31,17 +33,22 @@ import com.comp2042.view.NotificationPanel;
 import com.comp2042.view.PausePanel;
 import com.comp2042.view.ViewData;
 import com.comp2042.logic.leaderboard.LeaderboardManager;
+import com.comp2042.logic.leaderboard.PlayerScore;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
 import java.io.IOException;
 
 public class GuiController implements Initializable, InputHandler.BrickDisplayUpdater {
 
     private static final int BRICK_SIZE = 20;
     private String playerName = "Guest";
+
+    @FXML
+    private StackPane rootStackPane;
 
     @FXML
     private GridPane gamePanel;
@@ -58,7 +65,6 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     @FXML
     private GridPane nextBrickPanel;
     
-    @FXML
     private GameOverPanel gameOverPanel;
 
     @FXML
@@ -103,7 +109,15 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
             }
         });
         
+        gameOverPanel = new GameOverPanel();
         gameOverPanel.setVisible(false);
+        
+        // Wire up Game Over Panel buttons
+        gameOverPanel.getRestartButton().setOnAction(e -> newGame());
+        gameOverPanel.getMainMenuButton().setOnAction(e -> returnToMainMenu());
+        gameOverPanel.getLeaderboardButton().setOnAction(e -> showLeaderboard());
+        gameOverPanel.getQuitButton().setOnAction(e -> quitGame());
+
         pausePanel = new PausePanel();
         pausePanel.setVisible(false);
         
@@ -112,7 +126,12 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         pausePanel.getRestartButton().setOnAction(e -> newGame());
         pausePanel.getMainMenuButton().setOnAction(e -> returnToMainMenu());
         
-        groupNotification.getChildren().add(pausePanel);
+        if (rootStackPane != null) {
+            rootStackPane.getChildren().addAll(gameOverPanel, pausePanel);
+        } else {
+            System.err.println("rootStackPane is null! Fallback to groupNotification.");
+            groupNotification.getChildren().addAll(gameOverPanel, pausePanel);
+        }
         
         // Initialize Live Wallpaper
         try {
@@ -294,7 +313,11 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     }
 
     public void animateClearRows(java.util.List<Integer> rows, Runnable onFinished) {
-        SoundManager.play("clear");
+        // Play clear sound for single line, or doubleLineClear for multiple lines
+        if (rows.size() > 1) {
+            SoundManager.play("clear"); // "clear" key is mapped to doubleLineClear.mp3
+        } 
+        
         javafx.animation.ParallelTransition transition = new javafx.animation.ParallelTransition();
         
         for (Integer row : rows) {
@@ -402,6 +425,7 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         animationController.stop();
         SoundManager.play("gameover");
         gameOverPanel.setVisible(true);
+        gameOverPanel.toFront(); // Ensure Game Over panel is on top
         isGameOver.setValue(Boolean.TRUE);
         
         // Save score to leaderboard
@@ -434,6 +458,8 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
                 
                 animationController.stop();
                 pausePanel.setVisible(true);
+                // Ensure pausePanel is on top
+                pausePanel.toFront();
                 isPause.setValue(Boolean.TRUE);
             } else {
                 // Resume Game
@@ -458,6 +484,9 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     private void returnToMainMenu() {
         try {
             animationController.stop();
+            SoundManager.stopBackgroundMusic(); // Stop current game music
+            SoundManager.playBackgroundMusic("menu"); // Restart menu music
+            
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("MainMenu.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) gamePanel.getScene().getWindow();
@@ -466,5 +495,28 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    private void showLeaderboard() {
+        List<PlayerScore> scores = LeaderboardManager.getInstance().getScores();
+        StringBuilder sb = new StringBuilder();
+        if (scores.isEmpty()) {
+            sb.append("No scores yet!");
+        } else {
+            for (int i = 0; i < scores.size(); i++) {
+                PlayerScore ps = scores.get(i);
+                sb.append(String.format("%d. %s: %d\n", i + 1, ps.getName(), ps.getScore()));
+            }
+        }
+        
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Leaderboard");
+        alert.setHeaderText("Top 50 Scores");
+        alert.setContentText(sb.toString());
+        alert.showAndWait();
+    }
+    
+    private void quitGame() {
+        System.exit(0);
     }
 }

@@ -8,7 +8,7 @@
 <?import javafx.scene.media.MediaView?>
 <?import java.net.URL?>
 
-<StackPane fx:controller="com.comp2042.controller.GuiController"
+<StackPane fx:id="rootStackPane" fx:controller="com.comp2042.controller.GuiController"
            xmlns:fx="http://javafx.com/fxml">
 
     <MediaView fx:id="backgroundMediaView" fitWidth="550" fitHeight="600" preserveRatio="false"/>
@@ -36,7 +36,7 @@
 
         <Group fx:id="groupNotification" layoutX="14" layoutY="203">
             <VBox alignment="CENTER">
-                <GameOverPanel fx:id="gameOverPanel"/>
+                
             </VBox>
         </Group>
     
