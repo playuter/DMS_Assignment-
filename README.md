@@ -46,6 +46,7 @@ Extracted animation/timeline management from GuiController into separate Animati
 Implemented pause game functionality using 'P' key and new PausePanel<br>
 **Full Screen Overlays**: Pause and Game Over screens now overlay the entire window, including the next piece preview area.<br>
 **Sound Enhancements**: Adjusted volume levels (louder 'bop' sound) and fixed sound overlap issues.<br>
+**Enhanced Game Over Screen**: Added Restart, Main Menu, Leaderboard, and Save & Quit buttons to the Game Over screen.<br>
 
 ### Implemented but Not Working Properly
 
@@ -196,6 +197,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Added real-time high score tracking and display
   - Added support for variable game speeds (difficulty levels)
   - **UI Update**: Modified `pausePanel` and `gameOverPanel` integration to add them to the root `StackPane`, allowing them to overlay the entire game window.
+  - **Functionality Update**: Implemented actions for new Game Over buttons (Restart, Main Menu, Leaderboard, Save & Quit).
 - **Rationale**: 
   - Follows Single Responsibility Principle - GuiController now focuses solely on display/UI coordination
   - Input handling, animation control, and color mapping are separated into their own classes
@@ -212,7 +214,9 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 - **Impact**: Application now launches into the main menu
 
 **GameOverPanel.java** (`src/main/java/com/comp2042/view/GameOverPanel.java`)
-- **Changes**: Updated styling to include a semi-transparent background for full-screen overlay effect.
+- **Changes**: 
+  - Updated styling to include a semi-transparent background for full-screen overlay effect.
+  - Added buttons for Restart, Main Menu, Leaderboard, and Save & Quit.
 
 **Package Reorganization**
 - **Before**: All classes were in a single `com.comp2042` package
