@@ -150,6 +150,11 @@ public class MainMenuController implements Initializable {
     }
 
     @FXML
+    public void showSettings(ActionEvent event) {
+        com.comp2042.view.SettingsDialog.show();
+    }
+
+    @FXML
     public void exitGame(ActionEvent event) {
         System.exit(0);
     }

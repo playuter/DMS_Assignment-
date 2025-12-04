@@ -24,6 +24,7 @@
         <Button text="How to Play" onAction="#showHowToPlay" styleClass="ipad-dark-grey" minWidth="150"/>
         <Button text="Levels" onAction="#showLevels" styleClass="ipad-dark-grey" minWidth="150"/>
         <Button text="Leaderboard" onAction="#showLeaderboard" styleClass="ipad-dark-grey" minWidth="150"/>
+        <Button text="Settings" onAction="#showSettings" styleClass="ipad-dark-grey" minWidth="150"/>
         <Button text="Exit" onAction="#exitGame" styleClass="ipad-dark-grey" minWidth="150"/>
     </VBox>
 

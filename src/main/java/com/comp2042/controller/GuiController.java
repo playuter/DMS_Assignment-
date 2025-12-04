@@ -33,6 +33,7 @@ import com.comp2042.view.NotificationPanel;
 import com.comp2042.view.PausePanel;
 import com.comp2042.view.ViewData;
 import com.comp2042.logic.leaderboard.LeaderboardManager;
+import com.comp2042.view.SettingsDialog;
 import com.comp2042.logic.leaderboard.PlayerScore;
 
 import javafx.scene.Parent;
@@ -124,6 +125,7 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         // Wire up Pause Panel buttons
         pausePanel.getResumeButton().setOnAction(e -> pauseGame());
         pausePanel.getRestartButton().setOnAction(e -> newGame());
+        pausePanel.getSettingsButton().setOnAction(e -> SettingsDialog.show());
         pausePanel.getMainMenuButton().setOnAction(e -> returnToMainMenu());
         
         if (rootStackPane != null) {
