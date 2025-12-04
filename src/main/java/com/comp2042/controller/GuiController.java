@@ -294,6 +294,7 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     }
 
     public void animateClearRows(java.util.List<Integer> rows, Runnable onFinished) {
+        SoundManager.play("clear");
         javafx.animation.ParallelTransition transition = new javafx.animation.ParallelTransition();
         
         for (Integer row : rows) {
@@ -339,17 +340,21 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     public void bindScore(IntegerProperty integerProperty) {
         scoreValue.textProperty().bind(integerProperty.asString());
         
-        // Add listener to update high score in real-time if beaten
+            // Add listener to update high score in real-time if beaten
         integerProperty.addListener((obs, oldVal, newVal) -> {
             int currentScore = newVal.intValue();
             int highScore = Integer.parseInt(highScoreValue.getText());
             if (currentScore > highScore) {
+                if (currentScore > 0 && oldVal.intValue() <= highScore) {
+                    SoundManager.play("highscore");
+                }
                 highScoreValue.setText(String.valueOf(currentScore));
                 animateScore(highScoreValue); // Animate high score when beaten
             }
             
             // Check for milestones (100, 250, 500, 1000 and their multiples)
             if (isMilestone(currentScore)) {
+                SoundManager.play("highscore"); // Assuming milestone plays highscore sound or maybe generic
                 animateScore(scoreValue);
             }
         });
@@ -395,6 +400,7 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
 
     public void gameOver() {
         animationController.stop();
+        SoundManager.play("gameover");
         gameOverPanel.setVisible(true);
         isGameOver.setValue(Boolean.TRUE);
         
@@ -416,14 +422,27 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         newGame();
     }
 
+    private String previousMusicTrack;
+
     @Override
     public void pauseGame() {
         if (isGameOver.getValue() == Boolean.FALSE) {
             if (isPause.getValue() == Boolean.FALSE) {
+                // Pause Game
+                previousMusicTrack = SoundManager.getCurrentTrack();
+                SoundManager.playBackgroundMusic("pause");
+                
                 animationController.stop();
                 pausePanel.setVisible(true);
                 isPause.setValue(Boolean.TRUE);
             } else {
+                // Resume Game
+                if (previousMusicTrack != null) {
+                    SoundManager.playBackgroundMusic(previousMusicTrack);
+                } else {
+                    SoundManager.stopBackgroundMusic(); // Stop pause music if no previous track
+                }
+                
                 pausePanel.setVisible(false);
                 animationController.start();
                 isPause.setValue(Boolean.FALSE);

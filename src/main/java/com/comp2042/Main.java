@@ -14,6 +14,9 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
+        // Initialize sounds
+        com.comp2042.controller.SoundManager.loadSounds();
+
         URL location = getClass().getClassLoader().getResource("MainMenu.fxml");
         ResourceBundle resources = null;
         FXMLLoader fxmlLoader = new FXMLLoader(location, resources);

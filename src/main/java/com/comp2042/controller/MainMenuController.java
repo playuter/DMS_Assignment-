@@ -34,6 +34,7 @@ public class MainMenuController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        SoundManager.playBackgroundMusic("menu");
         // Load the font to ensure it's available for the menu
         try {
             Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
@@ -112,9 +113,18 @@ public class MainMenuController implements Initializable {
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(level -> {
             switch (level) {
-                case "Normal": selectedDelay = 600; break;
-                case "Extra": selectedDelay = 400; break;
-                case "Insane": selectedDelay = 200; break;
+                case "Normal": 
+                    selectedDelay = 600; 
+                    SoundManager.playBackgroundMusic("normal");
+                    break;
+                case "Extra": 
+                    selectedDelay = 400; 
+                    // Extra might use default or another track
+                    break;
+                case "Insane": 
+                    selectedDelay = 200; 
+                    SoundManager.playBackgroundMusic("insane");
+                    break;
             }
         });
     }

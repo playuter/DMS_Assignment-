@@ -35,6 +35,7 @@ public class GameController implements InputEventListener {
         
         ClearRow clearRow = null;
         if (!canMove) {
+            SoundManager.play("bop");
             board.mergeBrickToBackground();
             clearRow = board.clearRows();
             if (clearRow.getLinesRemoved() > 0) {
