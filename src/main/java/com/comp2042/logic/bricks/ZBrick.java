@@ -10,12 +10,39 @@ final class ZBrick implements Brick {
     private final List<int[][]> brickMatrix = new ArrayList<>();
 
     public ZBrick() {
+        // 0 - Up
+        // 7 7 .
+        // . 7 7
+        brickMatrix.add(new int[][]{
+                {7, 7, 0, 0},
+                {0, 7, 7, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0}
+        });
+        // 1 - Right
+        // . . 7
+        // . 7 7
+        // . 7 .
+        brickMatrix.add(new int[][]{
+                {0, 0, 7, 0},
+                {0, 7, 7, 0},
+                {0, 7, 0, 0},
+                {0, 0, 0, 0}
+        });
+        // 2 - Down
+        // . . .
+        // 7 7 .
+        // . 7 7
         brickMatrix.add(new int[][]{
                 {0, 0, 0, 0},
                 {7, 7, 0, 0},
                 {0, 7, 7, 0},
                 {0, 0, 0, 0}
         });
+        // 3 - Left
+        // . 7 .
+        // 7 7 .
+        // 7 . .
         brickMatrix.add(new int[][]{
                 {0, 7, 0, 0},
                 {7, 7, 0, 0},

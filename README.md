@@ -142,7 +142,8 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Implemented `calculateShadowY()` to determine ghost piece position
   - Implemented `hardDrop()` to instantly move the brick to the shadow position
   - Updated `getViewData()` to include shadow position
-- **Impact**: Blocks spawn correctly, hard drop functionality added, and view receives data needed to render shadow blocks
+  - **Implemented Super Rotation System (SRS)**: Updated `rotateLeftBrick` to use wall kick data, allowing pieces to rotate in tight spaces
+- **Impact**: Blocks spawn correctly, hard drop functionality added, shadow blocks rendered, and rotation is much smoother and forgiving
 
 **ViewData.java** (`src/main/java/com/comp2042/view/ViewData.java`)
 - **Changes**: 
@@ -155,6 +156,12 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Updated interface to include `getNextBricks()`
   - Implemented queue-based brick generation (maintains a buffer of upcoming bricks)
 - **Impact**: Enables the game to look ahead and display multiple upcoming pieces
+
+**Brick Classes (TBrick, JBrick, LBrick, SBrick, ZBrick, IBrick, OBrick)**
+- **Changes**:
+  - Redefined all shape matrices to match the Standard Tetris Guideline (SRS) orientations.
+  - Orientation 0 is now "Up" (or "Flat" for I), and rotations proceed Clockwise (Up->Right->Down->Left).
+- **Impact**: Ensures that the standard Wall Kick data is applied correctly, fixing issues where pieces would jump erratically during rotation.
 
 **GuiController.java** (`src/main/java/com/comp2042/controller/GuiController.java`)
 - **Refactoring**: Extracted multiple responsibilities into separate classes (InputHandler, ColorMapper, AnimationController)
@@ -214,6 +221,9 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 JavaFX + Maven setup required fixing compiler target compatibility
 
 Java path / JAVA_HOME configuration issues resolved
-
 Background completely broke when changing to live background
 when resizing the background does not resize along with the game window
+
+### References and Credits
+- **Original Repository**: Forked from [kooitt/CW2025](https://github.com/kooitt/CW2025)
+- **Super Rotation System (SRS)**: Implementation details and wall kick data adapted from [Tetris Wiki - Super Rotation System](https://tetris.wiki/Super_Rotation_System). The detailed offset tables and rotation logic explanation were really useful.
