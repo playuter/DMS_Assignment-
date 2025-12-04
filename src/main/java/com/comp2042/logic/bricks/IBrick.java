@@ -10,12 +10,44 @@ final class IBrick implements Brick {
     private final List<int[][]> brickMatrix = new ArrayList<>();
 
     public IBrick() {
+        // 0 - Up (Flat)
+        // . . . .
+        // 1 1 1 1
+        // . . . .
+        // . . . .
         brickMatrix.add(new int[][]{
                 {0, 0, 0, 0},
                 {1, 1, 1, 1},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0}
         });
+        // 1 - Right (Vertical)
+        // . . 1 .
+        // . . 1 .
+        // . . 1 .
+        // . . 1 .
+        brickMatrix.add(new int[][]{
+                {0, 0, 1, 0},
+                {0, 0, 1, 0},
+                {0, 0, 1, 0},
+                {0, 0, 1, 0}
+        });
+        // 2 - Down (Flat)
+        // . . . .
+        // . . . .
+        // 1 1 1 1
+        // . . . .
+        brickMatrix.add(new int[][]{
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+                {1, 1, 1, 1},
+                {0, 0, 0, 0}
+        });
+        // 3 - Left (Vertical)
+        // . 1 . .
+        // . 1 . .
+        // . 1 . .
+        // . 1 . .
         brickMatrix.add(new int[][]{
                 {0, 1, 0, 0},
                 {0, 1, 0, 0},

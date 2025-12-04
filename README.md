@@ -60,11 +60,29 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 
 ### New Java Classes
 
+**LeaderboardManager.java** (`src/main/java/com/comp2042/logic/leaderboard/LeaderboardManager.java`)
+- **Purpose**: Manages the persistent leaderboard state
+- **Responsibilities**:
+  - Loads/saves scores to disk
+  - Maintains top 50 high scores
+  - Provides methods to add and retrieve scores
+- **Benefits**: Encapsulates file I/O and score logic
+
+**PlayerScore.java** (`src/main/java/com/comp2042/logic/leaderboard/PlayerScore.java`)
+- **Purpose**: Data class representing a single score entry
+- **Responsibilities**: Stores name, score, and sorting logic (Comparable)
+
 **MainMenuController.java** (`src/main/java/com/comp2042/controller/MainMenuController.java`)
 - **Purpose**: Controls the main menu logic
 - **Responsibilities**: 
   - Loads the game scene when "Start Game" is clicked
   - Exits the application when "Exit" is clicked
+  - Handles player name input before starting game
+  - Displays the leaderboard via a dialog
+  - Allows difficulty level selection (Normal/Extra/Insane) via a dialog
+  - Displays game instructions and controls via a dialog
+  - Animates cleared rows before removing them
+  - Animates score display on hitting milestones
 - **Benefits**: 
   - Provides a clear entry point for the user
   - Separates menu logic from game logic
@@ -77,6 +95,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Delegates game logic events to GameController
   - Updates display via callback interface (BrickDisplayUpdater)
   - Handles pause game request ('P' key)
+  - Handles hard drop request ('SPACE' key)
 - **Design Pattern**: Uses callback interface pattern to avoid circular dependencies between InputHandler and GuiController
 - **Benefits**: Separates input handling from display logic, follows Single Responsibility Principle, improves testability
 
@@ -105,6 +124,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 - **Purpose**: Displays a "PAUSED" message when the game is paused
 - **Responsibilities**: 
   - Creates a UI panel with styled "PAUSED" text
+  - Provides navigation buttons (Resume, Restart, Main Menu)
   - Extends `BorderPane` for consistent layout
 - **Benefits**: 
   - Dedicated view component for pause state
@@ -117,9 +137,31 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 - **Impact**: Prevents players from farming score by repeatedly tapping down key; score now reflects only cleared lines
 
 **SimpleBoard.java** (`src/main/java/com/comp2042/model/SimpleBoard.java`)
-- Fixed initial block spawn position in `createNewBrick()` method
-- Changed initial y-position from `10` to `2` (line 88)
-- Blocks now spawn at the top of the visible game container instead of appearing partway down
+- **Changes**: 
+  - Fixed initial block spawn position
+  - Implemented `calculateShadowY()` to determine ghost piece position
+  - Implemented `hardDrop()` to instantly move the brick to the shadow position
+  - Updated `getViewData()` to include shadow position
+  - **Implemented Super Rotation System (SRS)**: Updated `rotateLeftBrick` to use wall kick data, allowing pieces to rotate in tight spaces
+- **Impact**: Blocks spawn correctly, hard drop functionality added, shadow blocks rendered, and rotation is much smoother and forgiving
+
+**ViewData.java** (`src/main/java/com/comp2042/view/ViewData.java`)
+- **Changes**: 
+  - Added `shadowY` field and constructor parameter
+  - Added `nextBricksData` list to hold matrices for upcoming pieces
+- **Impact**: Carries shadow position and next pieces queue from Model to View
+
+**BrickGenerator.java / RandomBrickGenerator.java**
+- **Changes**: 
+  - Updated interface to include `getNextBricks()`
+  - Implemented queue-based brick generation (maintains a buffer of upcoming bricks)
+- **Impact**: Enables the game to look ahead and display multiple upcoming pieces
+
+**Brick Classes (TBrick, JBrick, LBrick, SBrick, ZBrick, IBrick, OBrick)**
+- **Changes**:
+  - Redefined all shape matrices to match the Standard Tetris Guideline (SRS) orientations.
+  - Orientation 0 is now "Up" (or "Flat" for I), and rotations proceed Clockwise (Up->Right->Down->Left).
+- **Impact**: Ensures that the standard Wall Kick data is applied correctly, fixing issues where pieces would jump erratically during rotation.
 
 **GuiController.java** (`src/main/java/com/comp2042/controller/GuiController.java`)
 - **Refactoring**: Extracted multiple responsibilities into separate classes (InputHandler, ColorMapper, AnimationController)
@@ -135,6 +177,11 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Added `pauseGame` method to handle pause requests
   - Integrated `MediaView` to play `liveWallpaper.mp4` as the game background
   - Implemented `bindScore` method to update the score display in the UI
+  - Added `shadowPanel` and rendering logic for shadow blocks
+  - Added `nextBrickPanel` and logic to render the next 3 upcoming bricks
+  - Added logic to save player scores to the leaderboard on game over
+  - Added real-time high score tracking and display
+  - Added support for variable game speeds (difficulty levels)
 - **Rationale**: 
   - Follows Single Responsibility Principle - GuiController now focuses solely on display/UI coordination
   - Input handling, animation control, and color mapping are separated into their own classes
@@ -174,6 +221,9 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 JavaFX + Maven setup required fixing compiler target compatibility
 
 Java path / JAVA_HOME configuration issues resolved
-
 Background completely broke when changing to live background
 when resizing the background does not resize along with the game window
+
+### References and Credits
+- **Original Repository**: Forked from [kooitt/CW2025](https://github.com/kooitt/CW2025)
+- **Super Rotation System (SRS)**: Implementation details and wall kick data adapted from [Tetris Wiki - Super Rotation System](https://tetris.wiki/Super_Rotation_System). The detailed offset tables and rotation logic explanation were really useful.

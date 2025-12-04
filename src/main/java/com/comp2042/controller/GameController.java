@@ -24,19 +24,44 @@ public class GameController implements InputEventListener {
 
     @Override
     public DownData onDownEvent(MoveEvent event) {
-        boolean canMove = board.moveBrickDown();
+        boolean canMove;
+        
+        if (event.getEventType() == com.comp2042.events.EventType.HARD_DROP) {
+            board.hardDrop();
+            canMove = false; // Force merge
+        } else {
+            canMove = board.moveBrickDown();
+        }
+        
         ClearRow clearRow = null;
         if (!canMove) {
+            SoundManager.play("bop");
             board.mergeBrickToBackground();
             clearRow = board.clearRows();
             if (clearRow.getLinesRemoved() > 0) {
                 board.getScore().add(clearRow.getScoreBonus());
+                
+                // Animate clearing then continue game loop
+                final ClearRow finalClearRow = clearRow;
+                
+                // Trigger score animation if more than 1 line cleared
+                if (finalClearRow.getLinesRemoved() > 1) {
+                    viewGuiController.animateScore();
+                }
+                
+                viewGuiController.animateClearRows(finalClearRow.getClearedRows(), () -> {
+                    if (board.createNewBrick()) {
+                        viewGuiController.gameOver();
+                    }
+                    viewGuiController.refreshGameBackground(board.getBoardMatrix());
+                });
+            } else {
+                // No lines cleared, just continue
+                if (board.createNewBrick()) {
+                    viewGuiController.gameOver();
+                }
+                viewGuiController.refreshGameBackground(board.getBoardMatrix());
             }
-            if (board.createNewBrick()) {
-                viewGuiController.gameOver();
-            }
-
-            viewGuiController.refreshGameBackground(board.getBoardMatrix());
             
         }
         return new DownData(clearRow, board.getViewData());

@@ -10,12 +10,21 @@ final class OBrick implements Brick {
     private final List<int[][]> brickMatrix = new ArrayList<>();
 
     public OBrick() {
-        brickMatrix.add(new int[][]{
+        // O Piece is invariant, but for consistency we add 4 states
+        // Center is usually considered between the blocks
+        // . 4 4 .
+        // . 4 4 .
+        int[][] oShape = {
+                {0, 4, 4, 0},
+                {0, 4, 4, 0},
                 {0, 0, 0, 0},
-                {0, 4, 4, 0},
-                {0, 4, 4, 0},
                 {0, 0, 0, 0}
-        });
+        };
+        
+        brickMatrix.add(oShape);
+        brickMatrix.add(oShape);
+        brickMatrix.add(oShape);
+        brickMatrix.add(oShape);
     }
 
     @Override

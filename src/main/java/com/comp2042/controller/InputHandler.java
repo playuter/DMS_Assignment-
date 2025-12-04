@@ -91,6 +91,12 @@ public class InputHandler {
                     new MoveEvent(EventType.DOWN, EventSource.USER));
                 keyEvent.consume();
             }
+            
+            if (keyEvent.getCode() == KeyCode.SPACE) {
+                displayUpdater.moveDown(
+                    new MoveEvent(EventType.HARD_DROP, EventSource.USER));
+                keyEvent.consume();
+            }
         }
         
         // Handle new game key (works even when paused/game over)
