@@ -44,8 +44,8 @@ Extracted input handling logic from GuiController into separate InputHandler cla
 Centralized block color mapping via new ColorMapper utility (removes color logic from GuiController)<br>
 Extracted animation/timeline management from GuiController into separate AnimationController class<br>
 Implemented pause game functionality using 'P' key and new PausePanel<br>
-
-
+**Full Screen Overlays**: Pause and Game Over screens now overlay the entire window, including the next piece preview area.<br>
+**Sound Enhancements**: Adjusted volume levels (louder 'bop' sound) and fixed sound overlap issues.<br>
 
 ### Implemented but Not Working Properly
 
@@ -126,9 +126,22 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Creates a UI panel with styled "PAUSED" text
   - Provides navigation buttons (Resume, Restart, Main Menu)
   - Extends `BorderPane` for consistent layout
+  - **Updated**: Now styles the entire panel with a semi-transparent background to create a full-screen overlay effect.
 - **Benefits**: 
   - Dedicated view component for pause state
   - Reuses existing styles for visual consistency
+
+**SoundManager.java** (`src/main/java/com/comp2042/controller/SoundManager.java`)
+- **Purpose**: Centralized audio management for the game.
+- **Responsibilities**:
+  - Preloads all sound effects and music tracks.
+  - Handles one-shot sound playback (e.g., "bop", "clear").
+  - Manages background music tracks, ensuring only one plays at a time.
+  - Controls volume levels for specific sounds (e.g., boosted "bop" sound).
+- **Benefits**:
+  - Decouples sound logic from game controllers.
+  - Prevents sound overlap issues.
+  - Simplifies adding or modifying audio assets.
 
 ### Modified Java Classes
 
@@ -182,6 +195,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Added logic to save player scores to the leaderboard on game over
   - Added real-time high score tracking and display
   - Added support for variable game speeds (difficulty levels)
+  - **UI Update**: Modified `pausePanel` and `gameOverPanel` integration to add them to the root `StackPane`, allowing them to overlay the entire game window.
 - **Rationale**: 
   - Follows Single Responsibility Principle - GuiController now focuses solely on display/UI coordination
   - Input handling, animation control, and color mapping are separated into their own classes
@@ -197,16 +211,20 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 - **Changes**: Updated `start()` method to load `MainMenu.fxml` instead of `gameLayout.fxml` on startup
 - **Impact**: Application now launches into the main menu
 
+**GameOverPanel.java** (`src/main/java/com/comp2042/view/GameOverPanel.java`)
+- **Changes**: Updated styling to include a semi-transparent background for full-screen overlay effect.
+
 **Package Reorganization**
 - **Before**: All classes were in a single `com.comp2042` package
 - **After**: Classes organized into logical packages:
-  - `controller/` - GameController, GuiController, InputHandler
+  - `controller/` - GameController, GuiController, InputHandler, SoundManager
   - `model/` - Board, SimpleBoard, Score
-  - `view/` - ViewData, GameOverPanel, NotificationPanel
+  - `view/` - ViewData, GameOverPanel, NotificationPanel, PausePanel, ColorMapper
   - `events/` - MoveEvent, EventType, EventSource, InputEventListener
   - `data/` - DownData, ClearRow, NextShapeInfo
-  - `gameLogic/` - MatrixOperations, BrickRotator
+  - `gameLogic/` - MatrixOperations, BrickRotator, WallKickData
   - `logic/bricks/` - All brick type classes (already existed)
+  - `logic/leaderboard/` - LeaderboardManager, PlayerScore
 - **Rationale**: 
   - Improves code organization and maintainability
   - Makes it easier to locate related classes

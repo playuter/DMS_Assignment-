@@ -62,7 +62,6 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     @FXML
     private GridPane nextBrickPanel;
     
-    @FXML
     private GameOverPanel gameOverPanel;
 
     @FXML
@@ -107,7 +106,9 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
             }
         });
         
+        gameOverPanel = new GameOverPanel();
         gameOverPanel.setVisible(false);
+        
         pausePanel = new PausePanel();
         pausePanel.setVisible(false);
         
@@ -117,10 +118,10 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         pausePanel.getMainMenuButton().setOnAction(e -> returnToMainMenu());
         
         if (rootStackPane != null) {
-            rootStackPane.getChildren().add(pausePanel);
+            rootStackPane.getChildren().addAll(gameOverPanel, pausePanel);
         } else {
             System.err.println("rootStackPane is null! Fallback to groupNotification.");
-            groupNotification.getChildren().add(pausePanel);
+            groupNotification.getChildren().addAll(gameOverPanel, pausePanel);
         }
         
         // Initialize Live Wallpaper
@@ -411,6 +412,7 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         animationController.stop();
         SoundManager.play("gameover");
         gameOverPanel.setVisible(true);
+        gameOverPanel.toFront(); // Ensure Game Over panel is on top
         isGameOver.setValue(Boolean.TRUE);
         
         // Save score to leaderboard
