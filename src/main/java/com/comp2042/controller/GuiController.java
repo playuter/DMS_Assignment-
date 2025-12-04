@@ -313,7 +313,11 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     }
 
     public void animateClearRows(java.util.List<Integer> rows, Runnable onFinished) {
-        SoundManager.play("clear");
+        // Play clear sound for single line, or doubleLineClear for multiple lines
+        if (rows.size() > 1) {
+            SoundManager.play("clear"); // "clear" key is mapped to doubleLineClear.mp3
+        } 
+        
         javafx.animation.ParallelTransition transition = new javafx.animation.ParallelTransition();
         
         for (Integer row : rows) {
