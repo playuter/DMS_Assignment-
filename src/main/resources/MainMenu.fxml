@@ -16,7 +16,9 @@
     <VBox alignment="CENTER" spacing="20" styleClass="vbox">
         <Label text="TETRIS" styleClass="gameOverStyle" style="-fx-text-fill: white; -fx-background-color: transparent;"/>
         
-        <TextField fx:id="nameInput" promptText="Enter Name" maxWidth="200" style="-fx-font-size: 14px;"/>
+        <Label text="Enter Your Name:" styleClass="nextBrickLabel" style="-fx-font-size: 18px; -fx-text-fill: white; -fx-padding: 10 0 0 0;"/>
+        <TextField fx:id="nameInput" promptText="Player Name" maxWidth="220" 
+                   style="-fx-font-size: 16px; -fx-padding: 8; -fx-background-radius: 5; -fx-border-color: #61a2b1; -fx-border-width: 2; -fx-border-radius: 5;"/>
         
         <Button text="Start Game" onAction="#startGame" styleClass="ipad-dark-grey" minWidth="150"/>
         <Button text="How to Play" onAction="#showHowToPlay" styleClass="ipad-dark-grey" minWidth="150"/>
