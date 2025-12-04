@@ -9,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.effect.Reflection;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -42,6 +43,9 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
 
     private static final int BRICK_SIZE = 20;
     private String playerName = "Guest";
+
+    @FXML
+    private StackPane rootStackPane;
 
     @FXML
     private GridPane gamePanel;
@@ -112,7 +116,12 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         pausePanel.getRestartButton().setOnAction(e -> newGame());
         pausePanel.getMainMenuButton().setOnAction(e -> returnToMainMenu());
         
-        groupNotification.getChildren().add(pausePanel);
+        if (rootStackPane != null) {
+            rootStackPane.getChildren().add(pausePanel);
+        } else {
+            System.err.println("rootStackPane is null! Fallback to groupNotification.");
+            groupNotification.getChildren().add(pausePanel);
+        }
         
         // Initialize Live Wallpaper
         try {
@@ -434,6 +443,8 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
                 
                 animationController.stop();
                 pausePanel.setVisible(true);
+                // Ensure pausePanel is on top
+                pausePanel.toFront();
                 isPause.setValue(Boolean.TRUE);
             } else {
                 // Resume Game

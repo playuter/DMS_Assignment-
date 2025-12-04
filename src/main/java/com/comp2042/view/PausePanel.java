@@ -13,9 +13,11 @@ public class PausePanel extends BorderPane {
     private final Button mainMenuButton;
 
     public PausePanel() {
+        this.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);"); // Apply background to the entire panel
+
         VBox content = new VBox(20);
         content.setAlignment(Pos.CENTER);
-        content.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8); -fx-padding: 20;");
+        content.setStyle("-fx-padding: 20;"); // Keep padding on the content container
 
         final Label pauseLabel = new Label("PAUSED");
         pauseLabel.getStyleClass().add("gameOverStyle"); 
