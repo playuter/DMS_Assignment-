@@ -57,6 +57,7 @@ public class SoundManager {
     }
 
     public static void setGlobalVolume(double volume) {
+        // Update global volume
         globalVolume = volume;
         if (currentMediaPlayer != null) {
             currentMediaPlayer.setVolume(volume);

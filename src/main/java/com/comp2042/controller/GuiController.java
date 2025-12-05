@@ -52,6 +52,9 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     private StackPane rootStackPane;
 
     @FXML
+    private javafx.scene.layout.Pane gameBoardContainer;
+
+    @FXML
     private GridPane gamePanel;
 
     @FXML
@@ -165,6 +168,14 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
+        // Adjust game board container size based on matrix width
+        if (gameBoardContainer != null) {
+            double requiredWidth = boardMatrix[0].length * BRICK_SIZE;
+            gameBoardContainer.setMinWidth(requiredWidth);
+            gameBoardContainer.setPrefWidth(requiredWidth);
+            gameBoardContainer.setMaxWidth(requiredWidth);
+        }
+
         displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
             for (int i = 2; i < boardMatrix.length; i++) {
             for (int j = 0; j < boardMatrix[i].length; j++) {

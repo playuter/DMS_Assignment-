@@ -47,6 +47,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 **Full Screen Overlays**: Pause and Game Over screens now overlay the entire window, including the next piece preview area.<br>
 **Sound Enhancements**: Adjusted volume levels (louder 'bop' sound) and fixed sound overlap issues.<br>
 **Enhanced Game Over Screen**: Added Restart, Main Menu, Leaderboard, and Save & Quit buttons to the Game Over screen.<br>
+**Insane Level Update**: The "Insane" difficulty now features a board that is double the width (20 columns) of the standard board, providing a significantly more challenging experience. The layout dynamically adjusts to ensure the preview box remains visible next to the expanded board without overlapping.<br>
 
 ### Implemented but Not Working Properly
 
@@ -84,6 +85,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Displays game instructions and controls via a dialog
   - Animates cleared rows before removing them
   - Animates score display on hitting milestones
+  - **Insane Mode Logic**: Dynamically adjusts the game board dimensions (20 columns) and window size when "Insane" difficulty is selected.
 - **Benefits**: 
   - Provides a clear entry point for the user
   - Separates menu logic from game logic
@@ -147,8 +149,12 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 ### Modified Java Classes
 
 **GameController.java** (`src/main/java/com/comp2042/controller/GameController.java`)
-- **Changes**: Removed logic that incremented score by 1 for every manual down movement
-- **Impact**: Prevents players from farming score by repeatedly tapping down key; score now reflects only cleared lines
+- **Changes**: 
+  - Removed logic that incremented score by 1 for every manual down movement
+  - Updated constructor to accept variable board dimensions (rows/cols)
+- **Impact**: 
+  - Prevents players from farming score by repeatedly tapping down key; score now reflects only cleared lines
+  - Enables different board sizes for different difficulty levels (e.g., wider board for Insane mode)
 
 **SimpleBoard.java** (`src/main/java/com/comp2042/model/SimpleBoard.java`)
 - **Changes**: 
@@ -203,6 +209,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Input handling, animation control, and color mapping are separated into their own classes
   - Reduces complexity of GuiController class significantly
   - Each extracted class can be tested and modified independently
+  - Better foundation for adding features like difficulty levels (via AnimationController speed control)
 - **Impact**: 
   - Much cleaner code structure with clear separation of concerns
   - GuiController is now more maintainable and easier to understand

@@ -14,7 +14,7 @@
     <MediaView fx:id="backgroundMediaView" fitWidth="550" fitHeight="600" preserveRatio="false"/>
 
     <HBox alignment="CENTER" spacing="20">
-    <Pane maxWidth="300" maxHeight="510"
+    <Pane fx:id="gameBoardContainer" maxWidth="300" maxHeight="510"
           prefWidth="300" prefHeight="510"
           minWidth="300" minHeight="510">
 

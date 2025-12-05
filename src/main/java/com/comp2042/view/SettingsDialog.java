@@ -25,6 +25,7 @@ public class SettingsDialog {
         
         // Listener to update SoundManager and label
         volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            // Update the global volume setting
             SoundManager.setGlobalVolume(newVal.doubleValue());
             volumeLabel.setText("Volume: " + (int)(newVal.doubleValue() * 100) + "%");
         });
