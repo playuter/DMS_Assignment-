@@ -91,7 +91,11 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
 
     private AnimationController animationController;
     private long initialFallSpeed = 400;
-
+    private boolean isInsaneMode = false;
+    private long startTime;
+    private static final long MAX_INSANE_SPEED_TIME = 120000; // 2 minutes
+    private static final long MIN_INSANE_DELAY = 100; // Double speed (half delay of 200ms)
+    
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
@@ -216,12 +220,37 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
 
         refreshNextBricks(brick);
         
+        startTime = System.currentTimeMillis();
+        
         // Initialize animation controller for automatic falling
         animationController = new AnimationController(
-            () -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD)),
+            () -> {
+                moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD));
+                if (isInsaneMode && isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
+                    updateInsaneSpeed();
+                }
+            },
             initialFallSpeed
         );
         animationController.start();
+    }
+
+    private void updateInsaneSpeed() {
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        if (elapsedTime < MAX_INSANE_SPEED_TIME) {
+            // Calculate new delay: map elapsedTime (0 to 120000) to delay (200 to 100)
+            // Progress 0.0 to 1.0
+            double progress = (double) elapsedTime / MAX_INSANE_SPEED_TIME;
+            // Lerp from initial (200) to min (100)
+            long newDelay = (long) (initialFallSpeed - (progress * (initialFallSpeed - MIN_INSANE_DELAY)));
+            
+            // Only update if significantly different to avoid constant restarts
+            if (Math.abs(newDelay - animationController.getFallSpeed()) > 5) {
+                animationController.setFallSpeed(newDelay);
+            }
+        } else if (animationController.getFallSpeed() > MIN_INSANE_DELAY) {
+            animationController.setFallSpeed(MIN_INSANE_DELAY);
+        }
     }
 
 
@@ -310,6 +339,10 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         pausePanel.setVisible(false);
         eventListener.createNewGame();
         gamePanel.requestFocus();
+        startTime = System.currentTimeMillis(); // Reset timer
+        if (isInsaneMode) {
+            animationController.setFallSpeed(initialFallSpeed); // Reset speed
+        }
         animationController.start();
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
@@ -434,6 +467,10 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         this.initialFallSpeed = speed;
     }
 
+    public void setInsaneMode(boolean insaneMode) {
+        this.isInsaneMode = insaneMode;
+    }
+
     public void gameOver() {
         animationController.stop();
         SoundManager.play("gameover");
@@ -461,6 +498,8 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
 
     private String previousMusicTrack;
 
+    private long pauseStartTime;
+
     @Override
     public void pauseGame() {
         if (isGameOver.getValue() == Boolean.FALSE) {
@@ -468,6 +507,8 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
                 // Pause Game
                 previousMusicTrack = SoundManager.getCurrentTrack();
                 SoundManager.playBackgroundMusic("pause");
+                
+                pauseStartTime = System.currentTimeMillis(); // Record pause start time
                 
                 animationController.stop();
                 pausePanel.setVisible(true);
@@ -481,6 +522,9 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
                 } else {
                     SoundManager.stopBackgroundMusic(); // Stop pause music if no previous track
                 }
+                
+                long pauseDuration = System.currentTimeMillis() - pauseStartTime;
+                startTime += pauseDuration; // Shift start time so paused time doesn't count towards speed up
                 
                 pausePanel.setVisible(false);
                 animationController.start();

@@ -47,7 +47,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 **Full Screen Overlays**: Pause and Game Over screens now overlay the entire window, including the next piece preview area.<br>
 **Sound Enhancements**: Adjusted volume levels (louder 'bop' sound) and fixed sound overlap issues.<br>
 **Enhanced Game Over Screen**: Added Restart, Main Menu, Leaderboard, and Save & Quit buttons to the Game Over screen.<br>
-**Insane Level Update**: The "Insane" difficulty now features a board that is double the width (20 columns) of the standard board, providing a significantly more challenging experience. The layout dynamically adjusts to ensure the preview box remains visible next to the expanded board without overlapping.<br>
+**Insane Level Update**: The "Insane" difficulty now features a board that is double the width (20 columns) of the standard board, providing a significantly more challenging experience. The layout dynamically adjusts to ensure the preview box remains visible next to the expanded board without overlapping. Additionally, the falling speed gradually increases over 2 minutes, starting from 200ms and reaching a maximum double speed of 100ms.<br>
 
 ### Implemented but Not Working Properly
 
@@ -85,7 +85,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - Displays game instructions and controls via a dialog
   - Animates cleared rows before removing them
   - Animates score display on hitting milestones
-  - **Insane Mode Logic**: Dynamically adjusts the game board dimensions (20 columns) and window size when "Insane" difficulty is selected.
+  - **Insane Mode Logic**: Dynamically adjusts the game board dimensions (20 columns) and window size when "Insane" difficulty is selected. Sets a flag for dynamic speed adjustment.
 - **Benefits**: 
   - Provides a clear entry point for the user
   - Separates menu logic from game logic

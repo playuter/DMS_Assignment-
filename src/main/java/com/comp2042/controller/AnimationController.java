@@ -102,6 +102,3 @@ public class AnimationController {
         return fallSpeedMillis;
     }
 }
-
-
-

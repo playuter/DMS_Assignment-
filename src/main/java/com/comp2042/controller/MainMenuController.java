@@ -34,6 +34,8 @@ public class MainMenuController implements Initializable {
     private int selectedRows = 25;
     private int selectedCols = 10;
 
+    private boolean isInsaneMode = false;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         SoundManager.playBackgroundMusic("menu");
@@ -62,6 +64,7 @@ public class MainMenuController implements Initializable {
             GuiController c = loader.getController();
             c.setPlayerName(playerName);
             c.setInitialFallSpeed(selectedDelay);
+            c.setInsaneMode(isInsaneMode);
             
             // Initialize game controller with dimensions
             new GameController(c, selectedRows, selectedCols); 
@@ -126,18 +129,21 @@ public class MainMenuController implements Initializable {
                     selectedDelay = 600; 
                     selectedRows = 25;
                     selectedCols = 10;
+                    isInsaneMode = false;
                     SoundManager.playBackgroundMusic("normal");
                     break;
                 case "Extra": 
                     selectedDelay = 400; 
                     selectedRows = 25;
                     selectedCols = 10;
+                    isInsaneMode = false;
                     // Extra might use default or another track
                     break;
                 case "Insane": 
                     selectedDelay = 200; 
                     selectedRows = 25;
                     selectedCols = 20; // Double width
+                    isInsaneMode = true;
                     SoundManager.playBackgroundMusic("insane");
                     break;
             }
