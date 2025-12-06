@@ -31,6 +31,10 @@ public class MainMenuController implements Initializable {
     private TextField nameInput;
     
     private long selectedDelay = 400; // Default 400ms (Extra)
+    private int selectedRows = 25;
+    private int selectedCols = 10;
+
+    private boolean isInsaneMode = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -60,10 +64,18 @@ public class MainMenuController implements Initializable {
             GuiController c = loader.getController();
             c.setPlayerName(playerName);
             c.setInitialFallSpeed(selectedDelay);
-            new GameController(c); // Initialize game controller which sets up the game logic
+            c.setInsaneMode(isInsaneMode);
+            
+            // Initialize game controller with dimensions
+            new GameController(c, selectedRows, selectedCols); 
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root, 550, 600); // Adjusted size for side panel
+            
+            // Calculate window width based on columns (brick size approx 20px + side panel + padding)
+            int windowWidth = (selectedCols * 20) + 350; 
+            if (windowWidth < 550) windowWidth = 550;
+            
+            Scene scene = new Scene(root, windowWidth, 600);
             stage.setScene(scene);
             stage.show();
             
@@ -115,14 +127,23 @@ public class MainMenuController implements Initializable {
             switch (level) {
                 case "Normal": 
                     selectedDelay = 600; 
+                    selectedRows = 25;
+                    selectedCols = 10;
+                    isInsaneMode = false;
                     SoundManager.playBackgroundMusic("normal");
                     break;
                 case "Extra": 
                     selectedDelay = 400; 
+                    selectedRows = 25;
+                    selectedCols = 10;
+                    isInsaneMode = false;
                     // Extra might use default or another track
                     break;
                 case "Insane": 
                     selectedDelay = 200; 
+                    selectedRows = 25;
+                    selectedCols = 20; // Double width
+                    isInsaneMode = true;
                     SoundManager.playBackgroundMusic("insane");
                     break;
             }
@@ -147,6 +168,11 @@ public class MainMenuController implements Initializable {
         alert.setHeaderText("Top 50 Scores");
         alert.setContentText(sb.toString());
         alert.showAndWait();
+    }
+
+    @FXML
+    public void showSettings(ActionEvent event) {
+        com.comp2042.view.SettingsDialog.show();
     }
 
     @FXML

@@ -28,12 +28,20 @@ public class PausePanel extends BorderPane {
         restartButton = new Button("Restart");
         restartButton.getStyleClass().add("ipad-dark-grey");
         
+        Button settingsButton = new Button("Settings");
+        settingsButton.getStyleClass().add("ipad-dark-grey");
+        // We can assign an ID or expose it via getter, or handle action via callback.
+        // Since GuiController handles actions, we need to expose it.
+        this.settingsButton = settingsButton;
+
         mainMenuButton = new Button("Main Menu");
         mainMenuButton.getStyleClass().add("ipad-dark-grey");
 
-        content.getChildren().addAll(pauseLabel, resumeButton, restartButton, mainMenuButton);
+        content.getChildren().addAll(pauseLabel, resumeButton, restartButton, settingsButton, mainMenuButton);
         setCenter(content);
     }
+
+    private final Button settingsButton;
 
     public Button getResumeButton() {
         return resumeButton;
@@ -41,6 +49,10 @@ public class PausePanel extends BorderPane {
 
     public Button getRestartButton() {
         return restartButton;
+    }
+    
+    public Button getSettingsButton() {
+        return settingsButton;
     }
 
     public Button getMainMenuButton() {

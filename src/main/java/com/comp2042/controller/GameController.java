@@ -10,12 +10,13 @@ import com.comp2042.view.ViewData;
 
 public class GameController implements InputEventListener {
 
-    private Board board = new SimpleBoard(25, 10);
+    private Board board;
 
     private final GuiController viewGuiController;
 
-    public GameController(GuiController c) {
+    public GameController(GuiController c, int rows, int cols) {
         viewGuiController = c;
+        this.board = new SimpleBoard(rows, cols);
         board.createNewBrick();
         viewGuiController.setEventListener(this);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
