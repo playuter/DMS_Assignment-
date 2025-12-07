@@ -5,10 +5,18 @@ import java.util.List;
 
 import com.comp2042.gameLogic.MatrixOperations;
 
+/**
+ * Represents the 'T' shaped Tetris brick.
+ * This brick is shaped like a T (purple/magenta color).
+ */
 final class TBrick implements Brick {
 
     private final List<int[][]> brickMatrix = new ArrayList<>();
 
+    /**
+     * Creates a new TBrick.
+     * Initializes the 4 rotation states.
+     */
     public TBrick() {
         // 0 - Up
         brickMatrix.add(new int[][]{
@@ -40,6 +48,11 @@ final class TBrick implements Brick {
         });
     }
 
+    /**
+     * Gets the shape matrices for this brick.
+     * 
+     * @return A list of int arrays representing the brick's rotations.
+     */
     @Override
     public List<int[][]> getShapeMatrix() {
         return MatrixOperations.deepCopyList(brickMatrix);

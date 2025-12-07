@@ -6,6 +6,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
+/**
+ * Panel displayed when the game is over.
+ * Provides options to restart, return to main menu, view leaderboard, or quit.
+ * Includes a semi-transparent background for a full-screen overlay effect.
+ */
 public class GameOverPanel extends BorderPane {
 
     private final Button restartButton;
@@ -13,6 +18,10 @@ public class GameOverPanel extends BorderPane {
     private final Button leaderboardButton;
     private final Button quitButton;
 
+    /**
+     * Creates a new GameOverPanel.
+     * Initializes the layout, labels, and buttons.
+     */
     public GameOverPanel() {
         this.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);"); // Apply background to the entire panel
 
@@ -39,18 +48,38 @@ public class GameOverPanel extends BorderPane {
         setCenter(content);
     }
 
+    /**
+     * Gets the Restart button.
+     * 
+     * @return The restart button.
+     */
     public Button getRestartButton() {
         return restartButton;
     }
 
+    /**
+     * Gets the Main Menu button.
+     * 
+     * @return The main menu button.
+     */
     public Button getMainMenuButton() {
         return mainMenuButton;
     }
     
+    /**
+     * Gets the Leaderboard button.
+     * 
+     * @return The leaderboard button.
+     */
     public Button getLeaderboardButton() {
         return leaderboardButton;
     }
     
+    /**
+     * Gets the Save & Quit button.
+     * 
+     * @return The quit button.
+     */
     public Button getQuitButton() {
         return quitButton;
     }

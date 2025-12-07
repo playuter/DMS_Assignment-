@@ -43,9 +43,19 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import java.io.IOException;
 
+import com.comp2042.constants.GameConstants;
+
+import com.comp2042.view.components.PreviewPanel;
+import com.comp2042.view.components.ScoreView;
+
+/**
+ * Controller for the main game GUI (JavaFX).
+ * Manages the display of the game board, bricks, score, next pieces, and overlays.
+ * It delegates input handling to InputHandler and game logic events to GameController.
+ */
 public class GuiController implements Initializable, InputHandler.BrickDisplayUpdater {
 
-    private static final int BRICK_SIZE = 20;
+    private static final int BRICK_SIZE = GameConstants.BRICK_SIZE;
     private String playerName = "Guest";
 
     @FXML
@@ -90,23 +100,34 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     private Rectangle[][] shadowRectangles;
 
     private AnimationController animationController;
-    private long initialFallSpeed = 400;
+    private long initialFallSpeed = GameConstants.INITIAL_FALL_SPEED;
     private boolean isInsaneMode = false;
-    private long startTime;
-    private static final long MAX_INSANE_SPEED_TIME = 120000; // 2 minutes
-    private static final long MIN_INSANE_DELAY = 100; // Double speed (half delay of 200ms)
     
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
     
     private InputHandler inputHandler;
+    
+    private ScoreView scoreView;
+    private PreviewPanel previewPanel;
 
+    /**
+     * Initializes the controller class. This method is automatically called
+     * after the fxml file has been loaded.
+     * 
+     * @param location The location used to resolve relative paths for the root object.
+     * @param resources The resources used to localize the root object.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
+        
+        // Initialize Components
+        scoreView = new ScoreView(scoreValue, highScoreValue, null); // VBox container passed as null for now if unused
+        previewPanel = new PreviewPanel(nextBrickPanel);
         
         // Initialize input handler (will be set up after eventListener is set)
         // The input handler will be created in setEventListener() method
@@ -170,13 +191,16 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         reflection.setTopOpacity(0.9);
         reflection.setTopOffset(-12);
         
-        // Initialize High Score
-        int currentHighScore = LeaderboardManager.getInstance().getHighestScore();
-        if (highScoreValue != null) {
-            highScoreValue.setText(String.valueOf(currentHighScore));
-        }
+        // High Score initialization moved to ScoreView
     }
 
+    /**
+     * Initializes the game view with the board matrix and current brick.
+     * Sets up the grid of rectangles for the board and the falling brick.
+     * 
+     * @param boardMatrix The current state of the game board.
+     * @param brick The current falling brick view data.
+     */
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         // Adjust game board container size based on matrix width
         if (gameBoardContainer != null) {
@@ -226,45 +250,30 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         shadowPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getShadowY() * brickPanel.getHgap()
                 + brick.getShadowY() * BRICK_SIZE);
 
-        refreshNextBricks(brick);
+        if (previewPanel != null) {
+            previewPanel.refreshNextBricks(brick);
+        }
         
-        startTime = System.currentTimeMillis();
+        // startTime managed in AnimationController now
         
-        // Initialize animation controller for automatic falling
         animationController = new AnimationController(
             () -> {
                 moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD));
-                if (isInsaneMode && isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
-                    updateInsaneSpeed();
-                }
             },
             initialFallSpeed
         );
-        animationController.start();
-    }
-
-    private void updateInsaneSpeed() {
-        long elapsedTime = System.currentTimeMillis() - startTime;
-        if (elapsedTime < MAX_INSANE_SPEED_TIME) {
-            // Calculate new delay: map elapsedTime (0 to 120000) to delay (200 to 100)
-            // Progress 0.0 to 1.0
-            double progress = (double) elapsedTime / MAX_INSANE_SPEED_TIME;
-            // Lerp from initial (200) to min (100)
-            long newDelay = (long) (initialFallSpeed - (progress * (initialFallSpeed - MIN_INSANE_DELAY)));
-            
-            // Only update if significantly different to avoid constant restarts
-            if (Math.abs(newDelay - animationController.getFallSpeed()) > 5) {
-                animationController.setFallSpeed(newDelay);
-            }
-        } else if (animationController.getFallSpeed() > MIN_INSANE_DELAY) {
-            animationController.setFallSpeed(MIN_INSANE_DELAY);
+        if (isInsaneMode) {
+            animationController.setInsaneMode(true);
         }
+        animationController.start();
     }
 
 
     /**
      * Refreshes the brick display with new position and shape data.
      * Part of the BrickDisplayUpdater interface.
+     * 
+     * @param brick The updated view data for the falling brick.
      */
     @Override
     public void refreshBrick(ViewData brick) {
@@ -285,49 +294,28 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
                     setRectangleData(brick.getBrickData()[i][j], shadowRectangles[i][j]);
                 }
             }
-            refreshNextBricks(brick);
+            if (previewPanel != null) {
+                previewPanel.refreshNextBricks(brick);
+            }
         }
     }
     
-    private void refreshNextBricks(ViewData brick) {
-        if (nextBrickPanel == null) return;
-        nextBrickPanel.getChildren().clear();
-        
-        java.util.List<int[][]> nextBricks = brick.getNextBricksData();
-        if (nextBricks == null) return;
-        
-        for (int k = 0; k < nextBricks.size(); k++) {
-            int[][] nextBrickData = nextBricks.get(k);
-            GridPane singleBrickContainer = new GridPane();
-            singleBrickContainer.setHgap(1);
-            singleBrickContainer.setVgap(1);
-            
-            for (int i = 0; i < nextBrickData.length; i++) {
-                for (int j = 0; j < nextBrickData[i].length; j++) {
-                    if (nextBrickData[i][j] != 0) {
-                        Rectangle rectangle = new Rectangle(15, 15); // Smaller size for preview
-                        rectangle.setFill(ColorMapper.getColorForValue(nextBrickData[i][j]));
-                        rectangle.setArcWidth(5);
-                        rectangle.setArcHeight(5);
-                        singleBrickContainer.add(rectangle, j, i);
-                    }
-                }
-            }
-            nextBrickPanel.add(singleBrickContainer, 0, k);
-        }
-    }
+    // refreshNextBricks delegated to PreviewPanel
     
     /**
      * Handles downward movement of the brick.
      * Part of the BrickDisplayUpdater interface.
+     * 
+     * @param event The move event triggering the down movement.
      */
     @Override
     public void moveDown(MoveEvent event) {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
+                 int scoreBonus = GameConstants.SCORE_PER_LINE * downData.getClearRow().getLinesRemoved() * downData.getClearRow().getLinesRemoved();
                 NotificationPanel notificationPanel = new NotificationPanel(
-                        "+" + downData.getClearRow().getScoreBonus());
+                        "+" + scoreBonus);
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
             }
@@ -347,15 +335,23 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         pausePanel.setVisible(false);
         eventListener.createNewGame();
         gamePanel.requestFocus();
-        startTime = System.currentTimeMillis(); // Reset timer
+        animationController.resetStartTime(); // Reset timer
         if (isInsaneMode) {
             animationController.setFallSpeed(initialFallSpeed); // Reset speed
+            animationController.setInsaneMode(true);
+        } else {
+            animationController.setInsaneMode(false);
         }
         animationController.start();
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
     }
 
+    /**
+     * Refreshes the game board background to reflect the current state of locked bricks.
+     * 
+     * @param board The matrix representing the game board.
+     */
     public void refreshGameBackground(int[][] board) {
         for (int i = 2; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -366,6 +362,12 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         }
     }
 
+    /**
+     * Animates the clearing of rows.
+     * 
+     * @param rows The list of row indices to clear.
+     * @param onFinished A runnable to execute after the animation completes.
+     */
     public void animateClearRows(java.util.List<Integer> rows, Runnable onFinished) {
         // Play clear sound for single line, or doubleLineClear for multiple lines
         if (rows.size() > 1) {
@@ -403,6 +405,12 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     }
 
 
+    /**
+     * Sets the event listener for handling game logic events.
+     * Also initializes the InputHandler.
+     * 
+     * @param eventListener The event listener to set.
+     */
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
         // Create input handler after event listener is set
@@ -414,71 +422,61 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         );
     }
 
+    /**
+     * Binds the score property to the ScoreView.
+     * 
+     * @param integerProperty The score property to bind.
+     */
     public void bindScore(IntegerProperty integerProperty) {
-        scoreValue.textProperty().bind(integerProperty.asString());
-        
-            // Add listener to update high score in real-time if beaten
-        integerProperty.addListener((obs, oldVal, newVal) -> {
-            int currentScore = newVal.intValue();
-            int highScore = Integer.parseInt(highScoreValue.getText());
-            if (currentScore > highScore) {
-                if (currentScore > 0 && oldVal.intValue() <= highScore) {
-                    SoundManager.play("highscore");
-                }
-                highScoreValue.setText(String.valueOf(currentScore));
-                animateScore(highScoreValue); // Animate high score when beaten
-            }
-            
-            // Check for milestones (100, 250, 500, 1000 and their multiples)
-            if (isMilestone(currentScore)) {
-                SoundManager.play("highscore"); // Assuming milestone plays highscore sound or maybe generic
-                animateScore(scoreValue);
-            }
-        });
+        if (scoreView != null) {
+            scoreView.bindScore(integerProperty);
+        }
     }
 
-    private boolean isMilestone(int score) {
-        if (score == 0) return false;
-        return (score % 1000 == 0) || 
-               (score % 500 == 0) || 
-               (score % 250 == 0) || 
-               (score % 100 == 0);
-    }
+    // isMilestone delegated to ScoreView
 
+    /**
+     * Triggers the score animation.
+     */
     public void animateScore() {
-        animateScore(scoreValue);
+        if (scoreView != null) {
+            scoreView.animateScore();
+        }
     }
 
-    private void animateScore(Text target) {
-        javafx.animation.ScaleTransition st = new javafx.animation.ScaleTransition(
-            javafx.util.Duration.millis(200), target
-        );
-        st.setFromX(1.0);
-        st.setFromY(1.0);
-        st.setToX(1.5);
-        st.setToY(1.5);
-        st.setCycleCount(2);
-        st.setAutoReverse(true);
-        st.play();
-        
-        // Optional: Add a color flash effect
-        javafx.scene.effect.Glow glow = new javafx.scene.effect.Glow(0.8);
-        target.setEffect(glow);
-        st.setOnFinished(e -> target.setEffect(null));
-    }
+    // animateScore(Text target) delegated to ScoreView
 
+    /**
+     * Sets the player's name.
+     * 
+     * @param playerName The player's name.
+     */
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
     }
 
+    /**
+     * Sets the initial fall speed for the game.
+     * 
+     * @param speed The initial fall speed in milliseconds.
+     */
     public void setInitialFallSpeed(long speed) {
         this.initialFallSpeed = speed;
     }
 
+    /**
+     * Sets whether the game is in Insane Mode.
+     * 
+     * @param insaneMode True if Insane Mode is enabled, false otherwise.
+     */
     public void setInsaneMode(boolean insaneMode) {
         this.isInsaneMode = insaneMode;
     }
 
+    /**
+     * Handles the Game Over state.
+     * Stops the game, plays sound, shows the Game Over panel, and saves the score.
+     */
     public void gameOver() {
         animationController.stop();
         SoundManager.play("gameover");
@@ -488,7 +486,12 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         
         // Save score to leaderboard
         try {
-            int finalScore = Integer.parseInt(scoreValue.getText());
+            int finalScore = 0;
+            if (scoreView != null) {
+                finalScore = scoreView.getCurrentScore();
+            } else {
+                finalScore = Integer.parseInt(scoreValue.getText());
+            }
             LeaderboardManager.getInstance().addScore(playerName, finalScore);
             System.out.println("Score saved for " + playerName + ": " + finalScore);
         } catch (NumberFormatException e) {
@@ -499,6 +502,8 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     /**
      * Public method for FXML button binding (if needed).
      * Delegates to the newGame() method from BrickDisplayUpdater interface.
+     * 
+     * @param actionEvent The action event triggering the new game.
      */
     public void newGame(ActionEvent actionEvent) {
         newGame();
@@ -508,6 +513,11 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
 
     private long pauseStartTime;
 
+    /**
+     * Toggles the game pause state.
+     * Stops/resumes the animation and music, and shows/hides the pause panel.
+     * Part of the BrickDisplayUpdater interface.
+     */
     @Override
     public void pauseGame() {
         if (isGameOver.getValue() == Boolean.FALSE) {
@@ -532,7 +542,7 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
                 }
                 
                 long pauseDuration = System.currentTimeMillis() - pauseStartTime;
-                startTime += pauseDuration; // Shift start time so paused time doesn't count towards speed up
+                animationController.adjustStartTime(pauseDuration); // Shift start time
                 
                 pausePanel.setVisible(false);
                 animationController.start();
@@ -542,6 +552,11 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         gamePanel.requestFocus();
     }
 
+    /**
+     * Public method for FXML button binding to pause/resume the game.
+     * 
+     * @param actionEvent The action event.
+     */
     public void pauseGame(ActionEvent actionEvent) {
         pauseGame();
     }

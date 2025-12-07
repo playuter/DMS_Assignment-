@@ -25,6 +25,11 @@ import javafx.scene.control.ChoiceDialog;
 import java.util.ArrayList;
 import java.util.Optional;
 
+/**
+ * Controller for the Main Menu screen.
+ * Handles user interactions in the main menu, including starting the game,
+ * selecting difficulty levels, viewing the leaderboard, and adjusting settings.
+ */
 public class MainMenuController implements Initializable {
 
     @FXML
@@ -36,6 +41,13 @@ public class MainMenuController implements Initializable {
 
     private boolean isInsaneMode = false;
 
+    /**
+     * Initializes the controller class.
+     * Loads resources like fonts and plays background music.
+     * 
+     * @param location The location used to resolve relative paths for the root object.
+     * @param resources The resources used to localize the root object.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         SoundManager.playBackgroundMusic("menu");
@@ -47,6 +59,13 @@ public class MainMenuController implements Initializable {
         }
     }
 
+    /**
+     * Starts the game with the selected settings.
+     * Validates the player name input before proceeding.
+     * Loads the game layout and initializes the game controller.
+     * 
+     * @param event The action event triggering the start game.
+     */
     @FXML
     public void startGame(ActionEvent event) {
         String playerName = nameInput.getText().trim();
@@ -84,6 +103,11 @@ public class MainMenuController implements Initializable {
         }
     }
 
+    /**
+     * Displays the "How to Play" dialog with game instructions and controls.
+     * 
+     * @param event The action event.
+     */
     @FXML
     public void showHowToPlay(ActionEvent event) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -110,6 +134,12 @@ public class MainMenuController implements Initializable {
         alert.showAndWait();
     }
 
+    /**
+     * Displays a dialog to select the game difficulty level.
+     * Updates game settings based on the user's choice.
+     * 
+     * @param event The action event.
+     */
     @FXML
     public void showLevels(ActionEvent event) {
         List<String> choices = new ArrayList<>();
@@ -150,6 +180,11 @@ public class MainMenuController implements Initializable {
         });
     }
 
+    /**
+     * Displays the leaderboard dialog showing the top scores.
+     * 
+     * @param event The action event.
+     */
     @FXML
     public void showLeaderboard(ActionEvent event) {
         List<PlayerScore> scores = LeaderboardManager.getInstance().getScores();
@@ -170,14 +205,23 @@ public class MainMenuController implements Initializable {
         alert.showAndWait();
     }
 
+    /**
+     * Displays the settings dialog.
+     * 
+     * @param event The action event.
+     */
     @FXML
     public void showSettings(ActionEvent event) {
         com.comp2042.view.SettingsDialog.show();
     }
 
+    /**
+     * Exits the application.
+     * 
+     * @param event The action event.
+     */
     @FXML
     public void exitGame(ActionEvent event) {
         System.exit(0);
     }
 }
-

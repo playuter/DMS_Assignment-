@@ -14,6 +14,13 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.comp2042.constants.GameConstants;
+
+/**
+ * Default implementation of the Board interface.
+ * Manages the game state, including the grid matrix, the current falling brick,
+ * collision detection, and row clearing logic.
+ */
 public class SimpleBoard implements Board {
 
     private final int width;
@@ -24,10 +31,12 @@ public class SimpleBoard implements Board {
     private Point currentOffset;
     private final Score score;
 
-    private boolean isInsaneMode = false;
-    private boolean heartSpawned = false;
-    private boolean heartCollected = false;
-
+    /**
+     * Creates a new SimpleBoard with the specified dimensions.
+     * 
+     * @param width The number of rows in the board.
+     * @param height The number of columns in the board.
+     */
     public SimpleBoard(int width, int height) {
         this.width = width;
         this.height = height;
@@ -37,6 +46,10 @@ public class SimpleBoard implements Board {
         score = new Score();
     }
 
+    /**
+     * {@inheritDoc}
+     * Uses MatrixOperations to check for collisions.
+     */
     @Override
     public boolean moveBrickDown() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
@@ -51,6 +64,10 @@ public class SimpleBoard implements Board {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * Calculates the shadow position and moves the brick directly to it.
+     */
     @Override
     public void hardDrop() {
         int shadowY = calculateShadowY();
@@ -58,6 +75,9 @@ public class SimpleBoard implements Board {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean moveBrickLeft() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
@@ -72,6 +92,9 @@ public class SimpleBoard implements Board {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean moveBrickRight() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
@@ -86,6 +109,10 @@ public class SimpleBoard implements Board {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * Implements the Super Rotation System (SRS) wall kicks to allow rotation in tight spaces.
+     */
     @Override
     public boolean rotateLeftBrick() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
@@ -108,25 +135,14 @@ public class SimpleBoard implements Board {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     * Centers the new brick based on the board width.
+     */
     @Override
     public boolean createNewBrick() {
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
-        
-        // Insane Mode Heart/Bonus Brick Logic
-        if (isInsaneMode && !heartSpawned && score.scoreProperty().get() >= 150) {
-             // Force spawn on next brick
-             heartSpawned = true;
-             // Override brick color/value to 9 (Bonus Brick)
-             int[][] shape = brickRotator.getCurrentShape();
-             for (int i=0; i<shape.length; i++) {
-                 for (int j=0; j<shape[i].length; j++) {
-                     if (shape[i][j] != 0) {
-                         shape[i][j] = 9; // Set to Bonus Brick Value
-                     }
-                 }
-             }
-        }
         
         // Dynamic spawn position centering
         // Standard board is 10 cols wide.
@@ -136,35 +152,29 @@ public class SimpleBoard implements Board {
         
         int boardWidth = this.height; // Columns
         int centerX;
-        if (boardWidth > 10) {
+        if (boardWidth > GameConstants.DEFAULT_BOARD_WIDTH) {
             // Wide board (Insane Mode)
-            centerX = (boardWidth / 2) - 2; // 20/2 - 2 = 8
+            centerX = (boardWidth / 2) - 2; 
         } else {
             // Standard board (Normal/Extra)
-            centerX = (boardWidth / 2) - 1; // 10/2 - 1 = 4
+            centerX = (boardWidth / 2) - 1;
         }
         
         currentOffset = new Point(centerX, 2);
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 
-    @Override
-    public void setInsaneMode(boolean insaneMode) {
-        this.isInsaneMode = insaneMode;
-    }
-    
-    @Override
-    public boolean isHeartCollectedInLastClear() {
-        boolean collected = heartCollected;
-        heartCollected = false; // Reset after reading
-        return collected;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int[][] getBoardMatrix() {
         return currentGameMatrix;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ViewData getViewData() {
         int shadowY = calculateShadowY();
@@ -180,6 +190,12 @@ public class SimpleBoard implements Board {
                           shadowY);
     }
 
+    /**
+     * Calculates the Y-coordinate where the current brick would land if dropped instantly.
+     * Used for rendering the "ghost" piece.
+     * 
+     * @return The Y-coordinate for the shadow.
+     */
     private int calculateShadowY() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
         int[][] shape = brickRotator.getCurrentShape();
@@ -194,68 +210,40 @@ public class SimpleBoard implements Board {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void mergeBrickToBackground() {
         currentGameMatrix = MatrixOperations.merge(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ClearRow clearRows() {
         ClearRow clearRow = MatrixOperations.checkRemoving(currentGameMatrix);
-        
-        // Check for Bonus Brick collection (Value 9) in cleared rows
-        for (Integer rowIndex : clearRow.getClearedRows()) {
-             if (rowIndex < currentGameMatrix.length) { // Safety check
-                 for (int val : currentGameMatrix[rowIndex]) {
-                     if (val == 9) {
-                         heartCollected = true;
-                         break;
-                     }
-                 }
-             }
-        }
-        
         currentGameMatrix = clearRow.getNewMatrix();
         return clearRow;
-
     }
 
-    @Override
-    public void removeRow(int row) {
-        if (row >= 0 && row < currentGameMatrix.length) {
-            // Remove row by shifting everything above it down
-             for (int i = row; i > 0; i--) {
-                System.arraycopy(currentGameMatrix[i - 1], 0, currentGameMatrix[i], 0, currentGameMatrix[0].length);
-            }
-            // Clear top row
-            for (int j = 0; j < currentGameMatrix[0].length; j++) {
-                currentGameMatrix[0][j] = 0;
-            }
-        }
-    }
-
-    @Override
-    public void removeCol(int col) {
-        if (col >= 0 && col < currentGameMatrix[0].length) {
-            // Clear the column cells.
-            for (int i = 0; i < currentGameMatrix.length; i++) {
-                currentGameMatrix[i][col] = 0;
-            }
-        }
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Score getScore() {
         return score;
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void newGame() {
         currentGameMatrix = new int[width][height];
         score.reset();
-        heartSpawned = false;
-        heartCollected = false;
         createNewBrick();
     }
 }

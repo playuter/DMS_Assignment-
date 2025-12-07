@@ -7,7 +7,16 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.VBox;
 
+/**
+ * Utility class for displaying the Settings dialog.
+ * Allows the user to adjust game settings like volume.
+ */
 public class SettingsDialog {
+
+    /**
+     * Shows the Settings dialog.
+     * Creates an Alert dialog containing a volume slider.
+     */
     public static void show() {
         Alert alert = new Alert(Alert.AlertType.NONE);
         alert.setTitle("Settings");
@@ -47,4 +56,3 @@ public class SettingsDialog {
         alert.showAndWait();
     }
 }
-

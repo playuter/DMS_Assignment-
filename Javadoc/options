@@ -1,0 +1,22 @@
+-classpath
+'C:/Users/boody/.m2/repository/org/openjfx/javafx-controls/21.0.6/javafx-controls-21.0.6.jar;C:/Users/boody/.m2/repository/org/openjfx/javafx-controls/21.0.6/javafx-controls-21.0.6-win.jar;C:/Users/boody/.m2/repository/org/openjfx/javafx-graphics/21.0.6/javafx-graphics-21.0.6.jar;C:/Users/boody/.m2/repository/org/openjfx/javafx-graphics/21.0.6/javafx-graphics-21.0.6-win.jar;C:/Users/boody/.m2/repository/org/openjfx/javafx-base/21.0.6/javafx-base-21.0.6.jar;C:/Users/boody/.m2/repository/org/openjfx/javafx-base/21.0.6/javafx-base-21.0.6-win.jar;C:/Users/boody/.m2/repository/org/openjfx/javafx-fxml/21.0.6/javafx-fxml-21.0.6.jar;C:/Users/boody/.m2/repository/org/openjfx/javafx-fxml/21.0.6/javafx-fxml-21.0.6-win.jar;C:/Users/boody/.m2/repository/org/openjfx/javafx-media/21.0.6/javafx-media-21.0.6.jar;C:/Users/boody/.m2/repository/org/openjfx/javafx-media/21.0.6/javafx-media-21.0.6-win.jar'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'C:/Users/boody/Desktop/DMS/DMS_Assignment-/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2025. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'C:/Users/boody/Desktop/DMS/DMS_Assignment-/target/reports/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'demo3 1.0-SNAPSHOT API'
+-use
+-version
+-windowtitle
+'demo3 1.0-SNAPSHOT API'

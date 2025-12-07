@@ -9,8 +9,20 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * The entry point of the Tetris application.
+ * Extends JavaFX Application to set up the primary stage and load the initial scene.
+ */
 public class Main extends Application {
 
+    /**
+     * Starts the JavaFX application.
+     * Loads the Main Menu FXML, sets up the scene, and initializes sound resources.
+     * 
+     * @param primaryStage The primary stage for this application, onto which
+     *                     the application scene can be set.
+     * @throws Exception if there is an issue loading the FXML file.
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
 
@@ -28,6 +40,13 @@ public class Main extends Application {
         primaryStage.show();
     }
 
+    /**
+     * The main() method is ignored in correctly deployed JavaFX application.
+     * main() serves only as fallback in case the application can not be launched
+     * through deployment artifacts, e.g., in IDEs with limited FX support.
+     * 
+     * @param args the command line arguments
+     */
     public static void main(String[] args) {
         launch(args);
     }

@@ -7,6 +7,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Centralized sound manager for the application.
+ * Handles loading and playing sound effects (SFX) and background music.
+ * Supports volume control and track switching.
+ */
 public class SoundManager {
     private static final Map<String, AudioClip> sounds = new HashMap<>();
     private static final Map<String, Media> musicMedia = new HashMap<>();
@@ -15,6 +20,10 @@ public class SoundManager {
     private static String currentBackgroundMusic = null;
     private static double globalVolume = 1.0;
 
+    /**
+     * Loads all sound resources into memory.
+     * Should be called at application startup.
+     */
     public static void loadSounds() {
         loadSound("gameover", "/sounds/03_Game Over.mp3");
         loadSound("bop", "/sounds/bop.mp3");
@@ -48,6 +57,11 @@ public class SoundManager {
         }
     }
 
+    /**
+     * Plays a sound effect (SFX) once.
+     * 
+     * @param key The key of the sound to play (e.g., "bop", "clear").
+     */
     public static void play(String key) {
         AudioClip clip = sounds.get(key);
         if (clip != null) {
@@ -56,6 +70,11 @@ public class SoundManager {
         }
     }
 
+    /**
+     * Sets the global volume for all sounds and music.
+     * 
+     * @param volume The volume level (0.0 to 1.0).
+     */
     public static void setGlobalVolume(double volume) {
         // Update global volume
         globalVolume = volume;
@@ -64,10 +83,22 @@ public class SoundManager {
         }
     }
 
+    /**
+     * Gets the current global volume.
+     * 
+     * @return The volume level (0.0 to 1.0).
+     */
     public static double getGlobalVolume() {
         return globalVolume;
     }
 
+    /**
+     * Plays a background music track.
+     * If the track is already playing, it does nothing.
+     * Stops any currently playing background music before starting the new one.
+     * 
+     * @param key The key of the music track to play.
+     */
     public static void playBackgroundMusic(String key) {
         if (currentBackgroundMusic != null && currentBackgroundMusic.equals(key)) {
              if (currentMediaPlayer != null && currentMediaPlayer.getStatus() != MediaPlayer.Status.PLAYING) {
@@ -88,6 +119,9 @@ public class SoundManager {
         }
     }
 
+    /**
+     * Stops the currently playing background music.
+     */
     public static void stopBackgroundMusic() {
         if (currentMediaPlayer != null) {
             currentMediaPlayer.stop();
@@ -97,10 +131,20 @@ public class SoundManager {
         currentBackgroundMusic = null;
     }
 
+    /**
+     * Gets the key of the currently playing background music track.
+     * 
+     * @return The key of the current track, or null if nothing is playing.
+     */
     public static String getCurrentTrack() {
         return currentBackgroundMusic;
     }
     
+    /**
+     * Stops a specific sound effect if it is playing.
+     * 
+     * @param key The key of the sound to stop.
+     */
     public static void stop(String key) {
         AudioClip clip = sounds.get(key);
         if (clip != null) {
