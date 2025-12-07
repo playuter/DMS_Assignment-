@@ -49,7 +49,12 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 **Enhanced Game Over Screen**: Added Restart, Main Menu, Leaderboard, and Save & Quit buttons to the Game Over screen.<br>
 **Insane Level Update**: The "Insane" difficulty now features a board that is double the width (20 columns) of the standard board, providing a significantly more challenging experience. The layout dynamically adjusts to ensure the preview box remains visible next to the expanded board without overlapping. Additionally, the falling speed gradually increases over 2 minutes, starting from 200ms and reaching a maximum double speed of 100ms.<br>
 **Dynamic Live Wallpaper**: The live video background (`liveWallpaper.mp4`) now automatically scales to fill the entire application window, regardless of window size or game mode (Normal/Insane).<br>
-**UI Layout Improvement**: Moved the Score and High Score displays to the side panel (above the "Next" pieces) to streamline the game view and prevent overlap issues in wider board modes.
+**UI Layout Improvement**: Moved the Score and High Score displays to the side panel (above the "Next" pieces) to streamline the game view and prevent overlap issues in wider board modes.<br>
+**Lock Delay System**: Implemented a 500ms lock delay timer that allows players to slide or rotate pieces for a short period after they touch the ground, enabling advanced maneuvers like T-spins and tucks. The timer resets on movement or rotation, similar to modern Tetris standards.<br>
+**Insane Mode Bonus**: In Insane difficulty, once the player reaches a score of 150, the next brick is guaranteed to be a "Bonus Brick" (Black color). Clearing a line with this brick grants a "Heart" (❤️).<br>
+**Revival Mode**: If the player has a Heart and loses the game in Insane Mode, they enter "Revival Mode" instead of Game Over. This allows them to click and clear any 2 rows or columns to save themselves and continue playing.
+
+**Spawn Position Alignment**: Fixed an issue where bricks would spawn off-center in Normal/Extra modes due to the Insane mode layout logic. The spawn position now dynamically adjusts based on the board width.
 
 ### Implemented but Not Working Properly
 

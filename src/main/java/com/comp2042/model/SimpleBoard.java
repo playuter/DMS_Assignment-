@@ -141,13 +141,21 @@ public class SimpleBoard implements Board {
         }
         
         // Dynamic spawn position centering
-        // Standard board is 10 wide, spawns at 4 (approx center)
-        // Insane board is 20 wide.
-        // User requested moving one more to left.
-        // Previous was (width / 2) - 2.
-        // New: (width / 2) - 3.
-        // For 20: 10 - 3 = 7.
-        int centerX = (width / 2) - 3; 
+        // Standard board is 10 cols wide.
+        // Insane board is 20 cols wide.
+        // Note: 'this.height' holds the number of columns (passed as second arg to constructor)
+        //       'this.width' holds the number of rows.
+        
+        int boardWidth = this.height; // Columns
+        int centerX;
+        if (boardWidth > 10) {
+            // Wide board (Insane Mode)
+            centerX = (boardWidth / 2) - 2; // 20/2 - 2 = 8
+        } else {
+            // Standard board (Normal/Extra)
+            centerX = (boardWidth / 2) - 1; // 10/2 - 1 = 4
+        }
+        
         currentOffset = new Point(centerX, 2);
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
