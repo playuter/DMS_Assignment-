@@ -14,75 +14,111 @@ public class GameController implements InputEventListener {
 
     private final GuiController viewGuiController;
 
+    private javafx.animation.Timeline lockTimer;
+    private boolean isLocking = false;
+    private static final int LOCK_DELAY_MS = 500;
+
     public GameController(GuiController c, int rows, int cols) {
         viewGuiController = c;
         this.board = new SimpleBoard(rows, cols);
         board.createNewBrick();
+        
+        lockTimer = new javafx.animation.Timeline(new javafx.animation.KeyFrame(javafx.util.Duration.millis(LOCK_DELAY_MS), e -> lockBrick()));
+        lockTimer.setCycleCount(1);
+        
         viewGuiController.setEventListener(this);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
         viewGuiController.bindScore(board.getScore().scoreProperty());
     }
 
-    @Override
-    public DownData onDownEvent(MoveEvent event) {
-        boolean canMove;
-        
-        if (event.getEventType() == com.comp2042.events.EventType.HARD_DROP) {
-            board.hardDrop();
-            canMove = false; // Force merge
-        } else {
-            canMove = board.moveBrickDown();
+    private void startLockTimer() {
+        if (!isLocking) {
+            isLocking = true;
+            lockTimer.playFromStart();
         }
+    }
+
+    private void cancelLockTimer() {
+        if (isLocking) {
+            isLocking = false;
+            lockTimer.stop();
+        }
+    }
+
+    private void resetLockTimer() {
+        if (isLocking) {
+            lockTimer.stop();
+            lockTimer.playFromStart();
+        }
+    }
+
+    private void lockBrick() {
+        cancelLockTimer();
+        SoundManager.play("bop");
+        board.mergeBrickToBackground();
+        ClearRow clearRow = board.clearRows();
         
-        ClearRow clearRow = null;
-        if (!canMove) {
-            SoundManager.play("bop");
-            board.mergeBrickToBackground();
-            clearRow = board.clearRows();
-            if (clearRow.getLinesRemoved() > 0) {
-                board.getScore().add(clearRow.getScoreBonus());
-                
-                // Animate clearing then continue game loop
-                final ClearRow finalClearRow = clearRow;
-                
-                // Trigger score animation if more than 1 line cleared
-                if (finalClearRow.getLinesRemoved() > 1) {
-                    viewGuiController.animateScore();
-                }
-                
-                viewGuiController.animateClearRows(finalClearRow.getClearedRows(), () -> {
-                    if (board.createNewBrick()) {
-                        viewGuiController.gameOver();
-                    }
-                    viewGuiController.refreshGameBackground(board.getBoardMatrix());
-                });
-            } else {
-                // No lines cleared, just continue
-                if (board.createNewBrick()) {
-                    viewGuiController.gameOver();
-                }
-                viewGuiController.refreshGameBackground(board.getBoardMatrix());
+        Runnable afterLockAction = () -> {
+            if (board.createNewBrick()) {
+                viewGuiController.gameOver();
+            }
+            viewGuiController.refreshGameBackground(board.getBoardMatrix());
+            viewGuiController.refreshBrick(board.getViewData());
+        };
+
+        if (clearRow.getLinesRemoved() > 0) {
+            board.getScore().add(clearRow.getScoreBonus());
+            
+            // Trigger score animation if more than 1 line cleared
+            if (clearRow.getLinesRemoved() > 1) {
+                viewGuiController.animateScore();
             }
             
+            viewGuiController.animateClearRows(clearRow.getClearedRows(), afterLockAction);
+        } else {
+            afterLockAction.run();
         }
-        return new DownData(clearRow, board.getViewData());
+    }
+
+    @Override
+    public DownData onDownEvent(MoveEvent event) {
+        if (event.getEventType() == com.comp2042.events.EventType.HARD_DROP) {
+            board.hardDrop();
+            lockBrick(); // Immediate lock on hard drop
+            return new DownData(null, board.getViewData());
+        }
+
+        boolean moved = board.moveBrickDown();
+        if (moved) {
+            cancelLockTimer();
+        } else {
+            startLockTimer();
+        }
+        
+        return new DownData(null, board.getViewData());
     }
 
     @Override
     public ViewData onLeftEvent(MoveEvent event) {
-        board.moveBrickLeft();
+        if (board.moveBrickLeft()) {
+            resetLockTimer();
+        }
         return board.getViewData();
     }
 
     @Override
     public ViewData onRightEvent(MoveEvent event) {
-        board.moveBrickRight();
+        if (board.moveBrickRight()) {
+            resetLockTimer();
+        }
         return board.getViewData();
     }
 
     @Override
     public ViewData onRotateEvent(MoveEvent event) {
-        board.rotateLeftBrick();
+        if (board.rotateLeftBrick()) {
+            resetLockTimer();
+        }
         return board.getViewData();
     }
 

@@ -49,7 +49,8 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 **Enhanced Game Over Screen**: Added Restart, Main Menu, Leaderboard, and Save & Quit buttons to the Game Over screen.<br>
 **Insane Level Update**: The "Insane" difficulty now features a board that is double the width (20 columns) of the standard board, providing a significantly more challenging experience. The layout dynamically adjusts to ensure the preview box remains visible next to the expanded board without overlapping. Additionally, the falling speed gradually increases over 2 minutes, starting from 200ms and reaching a maximum double speed of 100ms.<br>
 **Dynamic Live Wallpaper**: The live video background (`liveWallpaper.mp4`) now automatically scales to fill the entire application window, regardless of window size or game mode (Normal/Insane).<br>
-**UI Layout Improvement**: Moved the Score and High Score displays to the side panel (above the "Next" pieces) to streamline the game view and prevent overlap issues in wider board modes.
+**UI Layout Improvement**: Moved the Score and High Score displays to the side panel (above the "Next" pieces) to streamline the game view and prevent overlap issues in wider board modes.<br>
+**Lock Delay System**: Implemented a 500ms lock delay timer that allows players to slide or rotate pieces for a short period after they touch the ground, enabling advanced maneuvers like T-spins and tucks. The timer resets on movement or rotation, similar to modern Tetris standards.
 
 ### Implemented but Not Working Properly
 
@@ -255,3 +256,4 @@ when resizing the background does not resize along with the game window
 ### References and Credits
 - **Original Repository**: Forked from [kooitt/CW2025](https://github.com/kooitt/CW2025)
 - **Super Rotation System (SRS)**: Implementation details and wall kick data adapted from [Tetris Wiki - Super Rotation System](https://tetris.wiki/Super_Rotation_System). The detailed offset tables and rotation logic explanation were really useful.
+- **Lock Delay**: Implemented based on the mechanics described in [Tetris Wiki - Lock Delay](https://tetris.wiki/Lock_delay), specifically following the "Move Reset" behavior where the lock timer resets on successful movement or rotation.
