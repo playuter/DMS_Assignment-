@@ -14,6 +14,8 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.comp2042.constants.GameConstants;
+
 public class SimpleBoard implements Board {
 
     private final int width;
@@ -23,7 +25,7 @@ public class SimpleBoard implements Board {
     private int[][] currentGameMatrix;
     private Point currentOffset;
     private final Score score;
-
+    
     private boolean isInsaneMode = false;
     private boolean heartSpawned = false;
     private boolean heartCollected = false;
@@ -114,15 +116,15 @@ public class SimpleBoard implements Board {
         brickRotator.setBrick(currentBrick);
         
         // Insane Mode Heart/Bonus Brick Logic
-        if (isInsaneMode && !heartSpawned && score.scoreProperty().get() >= 150) {
+        if (isInsaneMode && !heartSpawned && score.scoreProperty().get() >= GameConstants.BONUS_BRICK_SCORE_THRESHOLD) {
              // Force spawn on next brick
              heartSpawned = true;
-             // Override brick color/value to 9 (Bonus Brick)
+             // Override brick color/value to BONUS_BRICK_ID
              int[][] shape = brickRotator.getCurrentShape();
              for (int i=0; i<shape.length; i++) {
                  for (int j=0; j<shape[i].length; j++) {
                      if (shape[i][j] != 0) {
-                         shape[i][j] = 9; // Set to Bonus Brick Value
+                         shape[i][j] = GameConstants.BONUS_BRICK_ID; // Set to Bonus Brick Value
                      }
                  }
              }
@@ -136,12 +138,12 @@ public class SimpleBoard implements Board {
         
         int boardWidth = this.height; // Columns
         int centerX;
-        if (boardWidth > 10) {
+        if (boardWidth > GameConstants.DEFAULT_BOARD_WIDTH) {
             // Wide board (Insane Mode)
-            centerX = (boardWidth / 2) - 2; // 20/2 - 2 = 8
+            centerX = (boardWidth / 2) - 2; 
         } else {
             // Standard board (Normal/Extra)
-            centerX = (boardWidth / 2) - 1; // 10/2 - 1 = 4
+            centerX = (boardWidth / 2) - 1;
         }
         
         currentOffset = new Point(centerX, 2);
@@ -203,11 +205,11 @@ public class SimpleBoard implements Board {
     public ClearRow clearRows() {
         ClearRow clearRow = MatrixOperations.checkRemoving(currentGameMatrix);
         
-        // Check for Bonus Brick collection (Value 9) in cleared rows
+        // Check for Bonus Brick collection (Value BONUS_BRICK_ID) in cleared rows
         for (Integer rowIndex : clearRow.getClearedRows()) {
              if (rowIndex < currentGameMatrix.length) { // Safety check
                  for (int val : currentGameMatrix[rowIndex]) {
-                     if (val == 9) {
+                     if (val == GameConstants.BONUS_BRICK_ID) {
                          heartCollected = true;
                          break;
                      }

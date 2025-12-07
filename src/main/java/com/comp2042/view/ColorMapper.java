@@ -1,5 +1,6 @@
 package com.comp2042.view;
 
+import com.comp2042.constants.GameConstants;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
@@ -45,6 +46,7 @@ public class ColorMapper {
             case 5 -> Color.RED;
             case 6 -> Color.BEIGE;
             case 7 -> Color.BURLYWOOD;
+            case GameConstants.BONUS_BRICK_ID -> Color.BLACK;
             default -> Color.WHITE;
         };
     }

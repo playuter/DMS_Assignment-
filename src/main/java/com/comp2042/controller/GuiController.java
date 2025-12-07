@@ -43,9 +43,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import java.io.IOException;
 
+import com.comp2042.constants.GameConstants;
+
 public class GuiController implements Initializable, InputHandler.BrickDisplayUpdater {
 
-    private static final int BRICK_SIZE = 20;
+    private static final int BRICK_SIZE = GameConstants.BRICK_SIZE;
     private String playerName = "Guest";
 
     @FXML
@@ -90,11 +92,11 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     private Rectangle[][] shadowRectangles;
 
     private AnimationController animationController;
-    private long initialFallSpeed = 400;
+    private long initialFallSpeed = GameConstants.INITIAL_FALL_SPEED;
     private boolean isInsaneMode = false;
     private long startTime;
-    private static final long MAX_INSANE_SPEED_TIME = 120000; // 2 minutes
-    private static final long MIN_INSANE_DELAY = 100; // Double speed (half delay of 200ms)
+    private static final long MAX_INSANE_SPEED_TIME = GameConstants.MAX_INSANE_SPEED_TIME; // 2 minutes
+    private static final long MIN_INSANE_DELAY = GameConstants.MIN_INSANE_DELAY; // Double speed (half delay of 200ms)
     
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
@@ -439,10 +441,10 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
 
     private boolean isMilestone(int score) {
         if (score == 0) return false;
-        return (score % 1000 == 0) || 
-               (score % 500 == 0) || 
-               (score % 250 == 0) || 
-               (score % 100 == 0);
+        for (int milestone : GameConstants.MILESTONES) {
+            if (score % milestone == 0) return true;
+        }
+        return false;
     }
 
     public void animateScore() {
