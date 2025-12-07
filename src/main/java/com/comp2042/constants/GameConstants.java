@@ -14,9 +14,6 @@ public class GameConstants {
 
     // Game Rules & Mechanics
     public static final int LOCK_DELAY_MS = 500;
-    public static final int BONUS_BRICK_SCORE_THRESHOLD = 150;
-    public static final int BONUS_BRICK_ID = 9;
-    public static final int REVIVAL_CLEARS = 2;
     
     // Animation & Speed
     public static final long INITIAL_FALL_SPEED = 400;

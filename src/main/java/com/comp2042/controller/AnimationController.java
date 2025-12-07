@@ -1,5 +1,6 @@
 package com.comp2042.controller;
 
+import com.comp2042.constants.GameConstants;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
@@ -13,6 +14,9 @@ public class AnimationController {
     private Timeline timeline;
     private Runnable onTick;
     private long fallSpeedMillis;
+    private boolean isInsaneMode;
+    private long startTime;
+    private long initialFallSpeed;
     
     /**
      * Creates a new AnimationController with the default fall speed of 400ms.
@@ -32,6 +36,7 @@ public class AnimationController {
     public AnimationController(Runnable onTick, long fallSpeedMillis) {
         this.onTick = onTick;
         this.fallSpeedMillis = fallSpeedMillis;
+        this.initialFallSpeed = fallSpeedMillis;
         initializeTimeline();
     }
     
@@ -45,9 +50,45 @@ public class AnimationController {
                 if (onTick != null) {
                     onTick.run();
                 }
+                if (isInsaneMode) {
+                    updateInsaneSpeed();
+                }
             }
         ));
         timeline.setCycleCount(Timeline.INDEFINITE);
+    }
+    
+    public void setInsaneMode(boolean insaneMode) {
+        this.isInsaneMode = insaneMode;
+        if (insaneMode) {
+            this.startTime = System.currentTimeMillis();
+        }
+    }
+    
+    public void adjustStartTime(long adjustment) {
+        this.startTime += adjustment;
+    }
+    
+    public void resetStartTime() {
+        this.startTime = System.currentTimeMillis();
+    }
+    
+    private void updateInsaneSpeed() {
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        if (elapsedTime < GameConstants.MAX_INSANE_SPEED_TIME) {
+            // Calculate new delay: map elapsedTime (0 to 120000) to delay (200 to 100)
+            // Progress 0.0 to 1.0
+            double progress = (double) elapsedTime / GameConstants.MAX_INSANE_SPEED_TIME;
+            // Lerp from initial (200) to min (100)
+            long newDelay = (long) (initialFallSpeed - (progress * (initialFallSpeed - GameConstants.MIN_INSANE_DELAY)));
+            
+            // Only update if significantly different to avoid constant restarts
+            if (Math.abs(newDelay - fallSpeedMillis) > 5) {
+                setFallSpeed(newDelay);
+            }
+        } else if (fallSpeedMillis > GameConstants.MIN_INSANE_DELAY) {
+            setFallSpeed(GameConstants.MIN_INSANE_DELAY);
+        }
     }
     
     /**

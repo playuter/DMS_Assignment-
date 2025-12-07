@@ -52,13 +52,25 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 **UI Layout Improvement**: Moved the Score and High Score displays to the side panel (above the "Next" pieces) to streamline the game view and prevent overlap issues in wider board modes.<br>
 **Lock Delay System**: Implemented a 500ms lock delay timer that allows players to slide or rotate pieces for a short period after they touch the ground, enabling advanced maneuvers like T-spins and tucks. The timer resets on movement or rotation, similar to modern Tetris standards.
 
+### Code Refactoring
+- **GameConstants**: Centralized magic numbers (dimensions, speeds, IDs) into a dedicated `GameConstants` class.
+- **GuiController Decomposition**: Extracted UI logic into reusable components:
+  - `ScoreView`: Handles score display, high score tracking, and milestone animations.
+  - `PreviewPanel`: Manages the "Next Bricks" preview display.
+- **AnimationController**: Enhanced to encapsulate "Insane Mode" speed ramping logic, removing game rule logic from the view controller.
+
 ### Implemented but Not Working Properly
 
 (No known issues at the moment)
 
 ### Features Not Implemented
 
-(Will list non-implemented assignment features as work progresses)
+The following features were planned but could not be implemented within the current scope. They are marked for future development:
+
+- **Multiplayer Mode**: A competitive mode allowing two players to play against each other locally or online.
+- **Online Leaderboard**: Integration with a backend service to store and display global high scores.
+- **Custom Keybindings**: A configuration menu allowing players to customize their controls.
+- **Bonus Mechanic (Revival Mode)**: An Insane Mode feature where collecting a special heart block grants a second chance upon game over, allowing players to clear lines to survive.
 
 ### New Java Classes
 

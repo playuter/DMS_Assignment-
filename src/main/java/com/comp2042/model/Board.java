@@ -28,12 +28,4 @@ public interface Board {
     Score getScore();
 
     void newGame();
-
-    void setInsaneMode(boolean insaneMode);
-    
-    boolean isHeartCollectedInLastClear();
-    
-    void removeRow(int row);
-    
-    void removeCol(int col);
 }

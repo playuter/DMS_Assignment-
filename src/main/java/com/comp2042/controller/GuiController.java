@@ -45,6 +45,9 @@ import java.io.IOException;
 
 import com.comp2042.constants.GameConstants;
 
+import com.comp2042.view.components.PreviewPanel;
+import com.comp2042.view.components.ScoreView;
+
 public class GuiController implements Initializable, InputHandler.BrickDisplayUpdater {
 
     private static final int BRICK_SIZE = GameConstants.BRICK_SIZE;
@@ -94,21 +97,25 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     private AnimationController animationController;
     private long initialFallSpeed = GameConstants.INITIAL_FALL_SPEED;
     private boolean isInsaneMode = false;
-    private long startTime;
-    private static final long MAX_INSANE_SPEED_TIME = GameConstants.MAX_INSANE_SPEED_TIME; // 2 minutes
-    private static final long MIN_INSANE_DELAY = GameConstants.MIN_INSANE_DELAY; // Double speed (half delay of 200ms)
     
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
     
     private InputHandler inputHandler;
+    
+    private ScoreView scoreView;
+    private PreviewPanel previewPanel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
+        
+        // Initialize Components
+        scoreView = new ScoreView(scoreValue, highScoreValue, null); // VBox container passed as null for now if unused
+        previewPanel = new PreviewPanel(nextBrickPanel);
         
         // Initialize input handler (will be set up after eventListener is set)
         // The input handler will be created in setEventListener() method
@@ -172,11 +179,7 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         reflection.setTopOpacity(0.9);
         reflection.setTopOffset(-12);
         
-        // Initialize High Score
-        int currentHighScore = LeaderboardManager.getInstance().getHighestScore();
-        if (highScoreValue != null) {
-            highScoreValue.setText(String.valueOf(currentHighScore));
-        }
+        // High Score initialization moved to ScoreView
     }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
@@ -228,39 +231,22 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         shadowPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getShadowY() * brickPanel.getHgap()
                 + brick.getShadowY() * BRICK_SIZE);
 
-        refreshNextBricks(brick);
+        if (previewPanel != null) {
+            previewPanel.refreshNextBricks(brick);
+        }
         
-        startTime = System.currentTimeMillis();
+        // startTime managed in AnimationController now
         
-        // Initialize animation controller for automatic falling
         animationController = new AnimationController(
             () -> {
                 moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD));
-                if (isInsaneMode && isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
-                    updateInsaneSpeed();
-                }
             },
             initialFallSpeed
         );
-        animationController.start();
-    }
-
-    private void updateInsaneSpeed() {
-        long elapsedTime = System.currentTimeMillis() - startTime;
-        if (elapsedTime < MAX_INSANE_SPEED_TIME) {
-            // Calculate new delay: map elapsedTime (0 to 120000) to delay (200 to 100)
-            // Progress 0.0 to 1.0
-            double progress = (double) elapsedTime / MAX_INSANE_SPEED_TIME;
-            // Lerp from initial (200) to min (100)
-            long newDelay = (long) (initialFallSpeed - (progress * (initialFallSpeed - MIN_INSANE_DELAY)));
-            
-            // Only update if significantly different to avoid constant restarts
-            if (Math.abs(newDelay - animationController.getFallSpeed()) > 5) {
-                animationController.setFallSpeed(newDelay);
-            }
-        } else if (animationController.getFallSpeed() > MIN_INSANE_DELAY) {
-            animationController.setFallSpeed(MIN_INSANE_DELAY);
+        if (isInsaneMode) {
+            animationController.setInsaneMode(true);
         }
+        animationController.start();
     }
 
 
@@ -287,37 +273,13 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
                     setRectangleData(brick.getBrickData()[i][j], shadowRectangles[i][j]);
                 }
             }
-            refreshNextBricks(brick);
+            if (previewPanel != null) {
+                previewPanel.refreshNextBricks(brick);
+            }
         }
     }
     
-    private void refreshNextBricks(ViewData brick) {
-        if (nextBrickPanel == null) return;
-        nextBrickPanel.getChildren().clear();
-        
-        java.util.List<int[][]> nextBricks = brick.getNextBricksData();
-        if (nextBricks == null) return;
-        
-        for (int k = 0; k < nextBricks.size(); k++) {
-            int[][] nextBrickData = nextBricks.get(k);
-            GridPane singleBrickContainer = new GridPane();
-            singleBrickContainer.setHgap(1);
-            singleBrickContainer.setVgap(1);
-            
-            for (int i = 0; i < nextBrickData.length; i++) {
-                for (int j = 0; j < nextBrickData[i].length; j++) {
-                    if (nextBrickData[i][j] != 0) {
-                        Rectangle rectangle = new Rectangle(15, 15); // Smaller size for preview
-                        rectangle.setFill(ColorMapper.getColorForValue(nextBrickData[i][j]));
-                        rectangle.setArcWidth(5);
-                        rectangle.setArcHeight(5);
-                        singleBrickContainer.add(rectangle, j, i);
-                    }
-                }
-            }
-            nextBrickPanel.add(singleBrickContainer, 0, k);
-        }
-    }
+    // refreshNextBricks delegated to PreviewPanel
     
     /**
      * Handles downward movement of the brick.
@@ -349,9 +311,12 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         pausePanel.setVisible(false);
         eventListener.createNewGame();
         gamePanel.requestFocus();
-        startTime = System.currentTimeMillis(); // Reset timer
+        animationController.resetStartTime(); // Reset timer
         if (isInsaneMode) {
             animationController.setFallSpeed(initialFallSpeed); // Reset speed
+            animationController.setInsaneMode(true);
+        } else {
+            animationController.setInsaneMode(false);
         }
         animationController.start();
         isPause.setValue(Boolean.FALSE);
@@ -417,57 +382,20 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     }
 
     public void bindScore(IntegerProperty integerProperty) {
-        scoreValue.textProperty().bind(integerProperty.asString());
-        
-            // Add listener to update high score in real-time if beaten
-        integerProperty.addListener((obs, oldVal, newVal) -> {
-            int currentScore = newVal.intValue();
-            int highScore = Integer.parseInt(highScoreValue.getText());
-            if (currentScore > highScore) {
-                if (currentScore > 0 && oldVal.intValue() <= highScore) {
-                    SoundManager.play("highscore");
-                }
-                highScoreValue.setText(String.valueOf(currentScore));
-                animateScore(highScoreValue); // Animate high score when beaten
-            }
-            
-            // Check for milestones (100, 250, 500, 1000 and their multiples)
-            if (isMilestone(currentScore)) {
-                SoundManager.play("highscore"); // Assuming milestone plays highscore sound or maybe generic
-                animateScore(scoreValue);
-            }
-        });
+        if (scoreView != null) {
+            scoreView.bindScore(integerProperty);
+        }
     }
 
-    private boolean isMilestone(int score) {
-        if (score == 0) return false;
-        for (int milestone : GameConstants.MILESTONES) {
-            if (score % milestone == 0) return true;
-        }
-        return false;
-    }
+    // isMilestone delegated to ScoreView
 
     public void animateScore() {
-        animateScore(scoreValue);
+        if (scoreView != null) {
+            scoreView.animateScore();
+        }
     }
 
-    private void animateScore(Text target) {
-        javafx.animation.ScaleTransition st = new javafx.animation.ScaleTransition(
-            javafx.util.Duration.millis(200), target
-        );
-        st.setFromX(1.0);
-        st.setFromY(1.0);
-        st.setToX(1.5);
-        st.setToY(1.5);
-        st.setCycleCount(2);
-        st.setAutoReverse(true);
-        st.play();
-        
-        // Optional: Add a color flash effect
-        javafx.scene.effect.Glow glow = new javafx.scene.effect.Glow(0.8);
-        target.setEffect(glow);
-        st.setOnFinished(e -> target.setEffect(null));
-    }
+    // animateScore(Text target) delegated to ScoreView
 
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
@@ -490,7 +418,12 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         
         // Save score to leaderboard
         try {
-            int finalScore = Integer.parseInt(scoreValue.getText());
+            int finalScore = 0;
+            if (scoreView != null) {
+                finalScore = scoreView.getCurrentScore();
+            } else {
+                finalScore = Integer.parseInt(scoreValue.getText());
+            }
             LeaderboardManager.getInstance().addScore(playerName, finalScore);
             System.out.println("Score saved for " + playerName + ": " + finalScore);
         } catch (NumberFormatException e) {
@@ -534,7 +467,7 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
                 }
                 
                 long pauseDuration = System.currentTimeMillis() - pauseStartTime;
-                startTime += pauseDuration; // Shift start time so paused time doesn't count towards speed up
+                animationController.adjustStartTime(pauseDuration); // Shift start time
                 
                 pausePanel.setVisible(false);
                 animationController.start();
