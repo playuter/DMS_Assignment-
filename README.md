@@ -1,9 +1,38 @@
 # COMP2042 - DMS Assignment (Tetris Game)
 
+## Table of Contents
+- [GitHub](#github)
+- [Repository Structure](#repository-structure)
+- [Compilation Instructions](#compilation-instructions)
+  - [requirements](#requirements)
+- [how to build](#how-to-build)
+- [how to run](#how-to-run)
+- [progress](#progress)
+  - [Implemented and Working Properly](#implemented-and-working-properly)
+  - [Code Refactoring](#code-refactoring)
+  - [Implemented but Not Working Properly](#implemented-but-not-working-properly)
+  - [Features Not Implemented](#features-not-implemented)
+  - [New Java Classes](#new-java-classes)
+  - [Modified Java Classes](#modified-java-classes)
+  - [Unexpected Problems](#unexpected-problems)
+  - [References and Credits](#references-and-credits)
+
 ## GitHub
 
 Forked from kooitt/CW2025, https://github.com/kooitt/CW2025 <br>
 My Repository: https://github.com/playuter/DMS_Assignment-.git
+
+## Repository Structure
+
+
+- **Controller Package** (`com.comp2042.controller`): Contains all game control logic, input handling, sound management, and menu navigation.
+- **Model Package** (`com.comp2042.model`): Houses game state, business logic, score tracking, and core board mechanics.
+- **View Package** (`com.comp2042.view`): Manages all UI components, panels (Pause, Game Over), and visual rendering logic.
+- **Logic Package** (`com.comp2042.logic`): Contains core game mechanics, brick implementations, leaderboard logic, and SRS wall kick data.
+- **GameLogic Package** (`com.comp2042.gameLogic`): Encapsulates specific game rules like rotation algorithms, matrix operations, and lock delays.
+- **Events Package** (`com.comp2042.events`): Defines the event system for handling user inputs and game state changes.
+- **Data Package** (`com.comp2042.data`): Contains immutable data transfer objects (DTOs) for passing information between layers.
+- **Constants Package** (`com.comp2042.constants`): Centralized configuration and game constants (dimensions, speeds, scoring).
 
 ## Compilation Instructions
 
@@ -11,7 +40,7 @@ this project uses **maven** and **JavaFX**
 
 ### requirements
 
-Java 21 <br>
+Java 21 or later <br>
 Maven wrapper (included in the repo)<br>
 JavaFx (done by maven)
 
@@ -28,37 +57,49 @@ run this in the terminal inside the project directory:<br>
 
 ### Implemented and Working Properly
 
-Base Tetris project forked and cloned locally<br>
-got familiar with .md files<br>
-changed poml.xml file to use java version 21 instead of 23<br>
-Project compiles successfully with Java 21<br>
-Maven + JavaFX environment correctly set up<br>
-Game window launches<br>
-Bricks spawn, fall, and render<br>
-Controllers load without errors<br>
-Game board is now centered and stable when resizing or entering fullscreen (via updated FXML layout) <br>
-Background image restored after layout update <br>
-Fixed Tetris blocks spawning position - blocks now fall from the top of the container instead of appearing partway down <br>
-Refactored classes into logical packages (controller, model, view, events, data, gameLogic) <br>
-Extracted input handling logic from GuiController into separate InputHandler class<br>
-Centralized block color mapping via new ColorMapper utility (removes color logic from GuiController)<br>
-Extracted animation/timeline management from GuiController into separate AnimationController class<br>
-Implemented pause game functionality using 'P' key and new PausePanel<br>
-**Full Screen Overlays**: Pause and Game Over screens now overlay the entire window, including the next piece preview area.<br>
-**Sound Enhancements**: Adjusted volume levels (louder 'bop' sound) and fixed sound overlap issues.<br>
-**Enhanced Game Over Screen**: Added Restart, Main Menu, Leaderboard, and Save & Quit buttons to the Game Over screen.<br>
-**Insane Level Update**: The "Insane" difficulty now features a board that is double the width (20 columns) of the standard board, providing a significantly more challenging experience. The layout dynamically adjusts to ensure the preview box remains visible next to the expanded board without overlapping. Additionally, the falling speed gradually increases over 2 minutes, starting from 200ms and reaching a maximum double speed of 100ms.<br>
-**Dynamic Live Wallpaper**: The live video background (`liveWallpaper.mp4`) now automatically scales to fill the entire application window, regardless of window size or game mode (Normal/Insane).<br>
-**UI Layout Improvement**: Moved the Score and High Score displays to the side panel (above the "Next" pieces) to streamline the game view and prevent overlap issues in wider board modes.<br>
-**Lock Delay System**: Implemented a 500ms lock delay timer that allows players to slide or rotate pieces for a short period after they touch the ground, enabling advanced maneuvers like T-spins and tucks. The timer resets on movement or rotation, similar to modern Tetris standards.
+This project implements a complete Tetris experience with several modern enhancements and a robust architecture.
+
+**1. Main Menu and Navigation**
+The application launches into a polished main menu that serves as the central hub. From here, players can:
+- **Create a Profile**: Enter a username which is used to track high scores.
+- **Select Difficulty**: Choose from Normal, Extra, or Insane difficulty levels.
+- **Access Settings**: Adjust global volume for music and sound effects.
+- **View Leaderboards**: Check the top 50 scores achieved locally.
+
+**2. Game Modes and Progression**
+The game features three distinct difficulty levels to cater to different player skills:
+- **Normal Mode**: A standard experience with a 10x20 board and a moderate speed (600ms per drop).
+- **Extra Mode**: A slightly faster challenge with a 400ms drop speed.
+- **Insane Mode**: A unique challenge featuring a **double-width board (20x20)**. The game speed is dynamic, starting at 200ms and linearly increasing to 100ms over two minutes, testing survival skills on a massive grid.
+
+**3. Advanced Gameplay Mechanics**
+To ensure a fluid and competitive feel, several advanced systems were implemented:
+- **Super Rotation System (SRS)**: The game strictly follows standard Tetris rotation rules. This includes "wall kicks," allowing pieces to rotate into tight spaces by testing alternative positions when blocked.
+- **Lock Delay**: A "Move Reset" lock delay gives players a 0.5-second grace period after a piece lands to slide or rotate it. This allows for precise placement and tactical maneuvers like T-spins.
+- **Ghost Piece**: A shadow at the bottom of the board shows exactly where the current piece will land, improving placement accuracy.
+- **Next Piece Preview**: A look-ahead system displays the next three upcoming blocks, allowing for better strategic planning.
+
+**4. Visual and Audio Experience**
+- **Dynamic Layout**: The game window and live video background automatically resize to fit the screen. In Insane Mode, the UI rearranges itself to accommodate the wider board without overlapping.
+- **Immersive Overlays**: Pause and Game Over screens are full-screen overlays that dim the background, providing a clean and modern interface.
+- **Audio System**: A `SoundManager` handles background music (looping and switching) and sound effects (movement, rotation, clears). A global volume slider is available in the settings.
+
+**5. Data and Architecture**
+- **Persistence**: High scores are serialized and saved to a local file, preserving the leaderboard between sessions.
+- **MVC Architecture**: The codebase is strictly organized into Model, View, and Controller packages, promoting separation of concerns.
+- **Event-Driven Input**: A dedicated input handler manages keyboard events and dispatches abstract game commands, keeping the controller logic clean.
 
 ### Code Refactoring
+- **Package Organization**: Restructured the monolithic codebase into a clean MVC architecture with distinct packages (`controller`, `model`, `view`, `logic`, `data`, `events`) to improve maintainability and navigation.
 - **GameConstants**: Centralized magic numbers (dimensions, speeds, IDs) into a dedicated `GameConstants` class.
-- **GuiController Decomposition**: Extracted UI logic into reusable components:
-  - `ScoreView`: Handles score display, high score tracking, and milestone animations.
-  - `PreviewPanel`: Manages the "Next Bricks" preview display.
+- **GuiController Decomposition**: Extracted responsibilities to reduce class size and complexity:
+  - `InputHandler`: Offloaded all keyboard event processing and state checking.
+  - `ColorMapper`: Centralized block color logic, removing switch statements from the controller.
+  - `ScoreView`: Encapsulated score display, high score tracking, and milestone animations.
+  - `PreviewPanel`: Managed the "Next Bricks" preview display.
 - **AnimationController**: Enhanced to encapsulate "Insane Mode" speed ramping logic, removing game rule logic from the view controller.
 - **LockDelayManager**: Encapsulated the lock delay timer logic into a dedicated class in `com.comp2042.gameLogic`, removing complexity from `GameController`.
+- **Decoupled Scoring Logic**: Moved score calculation out of `ClearRow` and `MatrixOperations` (Model/Data) into `GameController` and `ScoreView`, ensuring that data objects remain lightweight and logic stays in the controller.
 
 ### Implemented but Not Working Properly
 
@@ -261,10 +302,11 @@ The following features were planned but could not be implemented within the curr
 ### Unexpected Problems
 
 JavaFX + Maven setup required fixing compiler target compatibility
-
 Java path / JAVA_HOME configuration issues resolved
 Background completely broke when changing to live background
 when resizing the background does not resize along with the game window
+playable box in insane level overlaps the next bricks preview
+when fixing the center alignment of the spawning bricks in the insane level the other 2 levels alignment broke
 
 ### References and Credits
 - **Original Repository**: Forked from [kooitt/CW2025](https://github.com/kooitt/CW2025)
