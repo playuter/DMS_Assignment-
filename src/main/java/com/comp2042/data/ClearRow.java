@@ -6,13 +6,11 @@ public final class ClearRow {
 
     private final int linesRemoved;
     private final int[][] newMatrix;
-    private final int scoreBonus;
     private final java.util.List<Integer> clearedRows;
 
-    public ClearRow(int linesRemoved, int[][] newMatrix, int scoreBonus, java.util.List<Integer> clearedRows) {
+    public ClearRow(int linesRemoved, int[][] newMatrix, java.util.List<Integer> clearedRows) {
         this.linesRemoved = linesRemoved;
         this.newMatrix = newMatrix;
-        this.scoreBonus = scoreBonus;
         this.clearedRows = clearedRows;
     }
 
@@ -26,9 +24,5 @@ public final class ClearRow {
 
     public int[][] getNewMatrix() {
         return MatrixOperations.copy(newMatrix);
-    }
-
-    public int getScoreBonus() {
-        return scoreBonus;
     }
 }

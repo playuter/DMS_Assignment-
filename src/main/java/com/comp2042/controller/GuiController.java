@@ -290,8 +290,9 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
+                 int scoreBonus = GameConstants.SCORE_PER_LINE * downData.getClearRow().getLinesRemoved() * downData.getClearRow().getLinesRemoved();
                 NotificationPanel notificationPanel = new NotificationPanel(
-                        "+" + downData.getClearRow().getScoreBonus());
+                        "+" + scoreBonus);
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
             }

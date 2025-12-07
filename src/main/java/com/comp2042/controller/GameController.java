@@ -1,5 +1,6 @@
 package com.comp2042.controller;
 
+import com.comp2042.constants.GameConstants;
 import com.comp2042.data.ClearRow;
 import com.comp2042.data.DownData;
 import com.comp2042.events.InputEventListener;
@@ -67,7 +68,8 @@ public class GameController implements InputEventListener {
         };
 
         if (clearRow.getLinesRemoved() > 0) {
-            board.getScore().add(clearRow.getScoreBonus());
+            int scoreBonus = GameConstants.SCORE_PER_LINE * clearRow.getLinesRemoved() * clearRow.getLinesRemoved();
+            board.getScore().add(scoreBonus);
             
             // Trigger score animation if more than 1 line cleared
             if (clearRow.getLinesRemoved() > 1) {
