@@ -144,6 +144,12 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         
         // Initialize Live Wallpaper
         try {
+            // Bind MediaView to StackPane size to ensure full coverage
+            if (backgroundMediaView != null && rootStackPane != null) {
+                backgroundMediaView.fitWidthProperty().bind(rootStackPane.widthProperty());
+                backgroundMediaView.fitHeightProperty().bind(rootStackPane.heightProperty());
+            }
+
             URL mediaUrl = getClass().getClassLoader().getResource("liveWallpaper.mp4");
             if (mediaUrl != null) {
                 Media media = new Media(mediaUrl.toExternalForm());
@@ -174,7 +180,8 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         // Adjust game board container size based on matrix width
         if (gameBoardContainer != null) {
-            double requiredWidth = boardMatrix[0].length * BRICK_SIZE;
+            // Calculate required width: Matrix width + padding for score/borders (approx 110px based on layout)
+            double requiredWidth = boardMatrix[0].length * BRICK_SIZE + 110;
             gameBoardContainer.setMinWidth(requiredWidth);
             gameBoardContainer.setPrefWidth(requiredWidth);
             gameBoardContainer.setMaxWidth(requiredWidth);
