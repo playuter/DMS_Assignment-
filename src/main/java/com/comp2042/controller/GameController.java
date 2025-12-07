@@ -14,82 +14,200 @@ public class GameController implements InputEventListener {
 
     private final GuiController viewGuiController;
 
+    private javafx.animation.Timeline lockTimer;
+    private boolean isLocking = false;
+    private static final int LOCK_DELAY_MS = 500;
+    private boolean hasHeart = false;
+    private boolean heartUsed = false;
+    private boolean isRevivalMode = false;
+    private int revivalClearsRemaining = 0;
+
     public GameController(GuiController c, int rows, int cols) {
         viewGuiController = c;
+        viewGuiController.setGameController(this);
         this.board = new SimpleBoard(rows, cols);
         board.createNewBrick();
+        
+        lockTimer = new javafx.animation.Timeline(new javafx.animation.KeyFrame(javafx.util.Duration.millis(LOCK_DELAY_MS), e -> lockBrick()));
+        lockTimer.setCycleCount(1);
+        
         viewGuiController.setEventListener(this);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
         viewGuiController.bindScore(board.getScore().scoreProperty());
     }
 
-    @Override
-    public DownData onDownEvent(MoveEvent event) {
-        boolean canMove;
+    public void setInsaneMode(boolean insaneMode) {
+        board.setInsaneMode(insaneMode);
+    }
+    
+    public boolean isRevivalMode() {
+        return isRevivalMode;
+    }
+    
+    public void handleRevivalSelection(int row, int col, boolean isRowSelection) {
+        if (!isRevivalMode || revivalClearsRemaining <= 0) return;
         
-        if (event.getEventType() == com.comp2042.events.EventType.HARD_DROP) {
-            board.hardDrop();
-            canMove = false; // Force merge
+        if (isRowSelection) {
+            board.removeRow(row);
         } else {
-            canMove = board.moveBrickDown();
+            board.removeCol(col);
         }
         
-        ClearRow clearRow = null;
-        if (!canMove) {
-            SoundManager.play("bop");
-            board.mergeBrickToBackground();
-            clearRow = board.clearRows();
-            if (clearRow.getLinesRemoved() > 0) {
-                board.getScore().add(clearRow.getScoreBonus());
-                
-                // Animate clearing then continue game loop
-                final ClearRow finalClearRow = clearRow;
-                
-                // Trigger score animation if more than 1 line cleared
-                if (finalClearRow.getLinesRemoved() > 1) {
-                    viewGuiController.animateScore();
-                }
-                
-                viewGuiController.animateClearRows(finalClearRow.getClearedRows(), () -> {
-                    if (board.createNewBrick()) {
-                        viewGuiController.gameOver();
-                    }
-                    viewGuiController.refreshGameBackground(board.getBoardMatrix());
-                });
-            } else {
-                // No lines cleared, just continue
-                if (board.createNewBrick()) {
+        revivalClearsRemaining--;
+        viewGuiController.refreshGameBackground(board.getBoardMatrix());
+        
+        if (revivalClearsRemaining <= 0) {
+            endRevivalMode();
+        }
+    }
+    
+    private void startRevivalMode() {
+        isRevivalMode = true;
+        heartUsed = true;
+        hasHeart = false;
+        revivalClearsRemaining = 2;
+        viewGuiController.setHasHeart(false);
+        viewGuiController.showRevivalOverlay(true);
+    }
+    
+    private void endRevivalMode() {
+        isRevivalMode = false;
+        viewGuiController.showRevivalOverlay(false);
+        if (board.createNewBrick()) {
+             viewGuiController.gameOver();
+        }
+        viewGuiController.refreshGameBackground(board.getBoardMatrix());
+        viewGuiController.refreshBrick(board.getViewData());
+    }
+
+    private void startLockTimer() {
+        if (!isLocking && !isRevivalMode) {
+            isLocking = true;
+            lockTimer.playFromStart();
+        }
+    }
+
+    private void cancelLockTimer() {
+        if (isLocking) {
+            isLocking = false;
+            lockTimer.stop();
+        }
+    }
+
+    private void resetLockTimer() {
+        if (isLocking) {
+            lockTimer.stop();
+            lockTimer.playFromStart();
+        }
+    }
+
+    public void pauseGame() {
+        if (isLocking) {
+            lockTimer.pause();
+        }
+    }
+
+    public void resumeGame() {
+        if (isLocking) {
+            lockTimer.play();
+        }
+    }
+
+    private void lockBrick() {
+        cancelLockTimer();
+        SoundManager.play("bop");
+        board.mergeBrickToBackground();
+        ClearRow clearRow = board.clearRows();
+        
+        if (board.isHeartCollectedInLastClear()) {
+            if (!heartUsed) {
+                hasHeart = true;
+                viewGuiController.setHasHeart(true);
+                SoundManager.play("highscore");
+            }
+        }
+        
+        Runnable afterLockAction = () -> {
+            if (board.createNewBrick()) {
+                if (hasHeart && !heartUsed) {
+                    startRevivalMode();
+                } else {
                     viewGuiController.gameOver();
                 }
-                viewGuiController.refreshGameBackground(board.getBoardMatrix());
+            }
+            viewGuiController.refreshGameBackground(board.getBoardMatrix());
+            viewGuiController.refreshBrick(board.getViewData());
+        };
+
+        if (clearRow.getLinesRemoved() > 0) {
+            board.getScore().add(clearRow.getScoreBonus());
+            
+            if (clearRow.getLinesRemoved() > 1) {
+                viewGuiController.animateScore();
             }
             
+            viewGuiController.animateClearRows(clearRow.getClearedRows(), afterLockAction);
+        } else {
+            afterLockAction.run();
         }
-        return new DownData(clearRow, board.getViewData());
+    }
+
+    @Override
+    public DownData onDownEvent(MoveEvent event) {
+        if (isRevivalMode) return new DownData(null, board.getViewData());
+
+        if (event.getEventType() == com.comp2042.events.EventType.HARD_DROP) {
+            board.hardDrop();
+            lockBrick();
+            return new DownData(null, board.getViewData());
+        }
+
+        boolean moved = board.moveBrickDown();
+        if (moved) {
+            cancelLockTimer();
+        } else {
+            startLockTimer();
+        }
+        
+        return new DownData(null, board.getViewData());
     }
 
     @Override
     public ViewData onLeftEvent(MoveEvent event) {
-        board.moveBrickLeft();
+        if (isRevivalMode) return board.getViewData();
+        if (board.moveBrickLeft()) {
+            resetLockTimer();
+        }
         return board.getViewData();
     }
 
     @Override
     public ViewData onRightEvent(MoveEvent event) {
-        board.moveBrickRight();
+        if (isRevivalMode) return board.getViewData();
+        if (board.moveBrickRight()) {
+            resetLockTimer();
+        }
         return board.getViewData();
     }
 
     @Override
     public ViewData onRotateEvent(MoveEvent event) {
-        board.rotateLeftBrick();
+        if (isRevivalMode) return board.getViewData();
+        if (board.rotateLeftBrick()) {
+            resetLockTimer();
+        }
         return board.getViewData();
     }
 
-
     @Override
     public void createNewGame() {
+        cancelLockTimer();
         board.newGame();
+        hasHeart = false;
+        heartUsed = false;
+        isRevivalMode = false;
+        viewGuiController.setHasHeart(false);
+        viewGuiController.showRevivalOverlay(false);
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
     }
 }

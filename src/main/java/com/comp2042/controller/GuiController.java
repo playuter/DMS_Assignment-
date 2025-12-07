@@ -102,6 +102,33 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     
     private InputHandler inputHandler;
 
+    @FXML
+    private javafx.scene.control.Label heartIndicator;
+    
+    @FXML
+    private Text revivalOverlayText;
+    
+    private GameController gameController;
+
+    public void setGameController(GameController controller) {
+        this.gameController = controller;
+    }
+
+    public void setHasHeart(boolean hasHeart) {
+        if (heartIndicator != null) {
+            heartIndicator.setVisible(hasHeart);
+        }
+    }
+
+    public void showRevivalOverlay(boolean show) {
+        if (revivalOverlayText != null) {
+            revivalOverlayText.setVisible(show);
+            if (show) {
+                revivalOverlayText.toFront();
+            }
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
@@ -278,11 +305,36 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
             shadowPanel.setLayoutX(brickPanel.getLayoutX());
             shadowPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getShadowY() * brickPanel.getHgap()
                     + brick.getShadowY() * BRICK_SIZE);
-                    
-            for (int i = 0; i < brick.getBrickData().length; i++) {
-                for (int j = 0; j < brick.getBrickData()[i].length; j++) {
-                    setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
-                    setRectangleData(brick.getBrickData()[i][j], shadowRectangles[i][j]);
+            
+            // Check if brick size matches current rectangles array size
+            if (rectangles == null || rectangles.length != brick.getBrickData().length || rectangles[0].length != brick.getBrickData()[0].length) {
+                // Rebuild brickPanel and rectangles array
+                brickPanel.getChildren().clear();
+                shadowPanel.getChildren().clear();
+                rectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
+                shadowRectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
+                
+                for (int i = 0; i < brick.getBrickData().length; i++) {
+                    for (int j = 0; j < brick.getBrickData()[i].length; j++) {
+                        Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                        rectangle.setFill(ColorMapper.getColorForValue(brick.getBrickData()[i][j]));
+                        rectangles[i][j] = rectangle;
+                        brickPanel.add(rectangle, j, i);
+                        
+                        Rectangle shadowRec = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                        shadowRec.setFill(ColorMapper.getColorForValue(brick.getBrickData()[i][j]));
+                        shadowRec.setOpacity(0.3);
+                        shadowRectangles[i][j] = shadowRec;
+                        shadowPanel.add(shadowRec, j, i);
+                    }
+                }
+            } else {
+                // Update existing rectangles
+                for (int i = 0; i < brick.getBrickData().length; i++) {
+                    for (int j = 0; j < brick.getBrickData()[i].length; j++) {
+                        setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
+                        setRectangleData(brick.getBrickData()[i][j], shadowRectangles[i][j]);
+                    }
                 }
             }
             refreshNextBricks(brick);
