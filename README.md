@@ -44,14 +44,20 @@ Java 21 or later <br>
 Maven wrapper (included in the repo)<br>
 JavaFx (done by maven)
 
-## how to build
+## how to run
 
+### Command Line
+
+#### How to Build
 run this in the terminal inside the project directory:<br>
 `./mvnw.cmd clean compile`
 
-## how to run
-
+#### How to Run
 `./mvnw.cmd javafx:run`
+
+### IntelliJ IDEA
+
+
 
 ## progress
 
