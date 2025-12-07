@@ -57,6 +57,29 @@ run this in the terminal inside the project directory:<br>
 
 ### IntelliJ IDEA
 
+#### How to Build
+- Open the maven window using the letter m shape on the right sidebar
+- Choose Execute Maven Goal
+- Search for mvn clean and double click it 
+- Search for mvn compile and double click it
+
+#### OR
+- Open the maven window using the letter m shape on the right sidebar
+- Under m demo3 choose lifecycle 
+- then clean 
+- then compile
+
+#### How to Run
+- Open the maven window using the letter m shape on the right sidebar
+- Choose Execute Maven Goal
+- Search for mvn javafx:run and double click it 
+
+#### OR 
+- Open the maven window using the letter m shape on the right sidebar
+- Under m demo3 choose plugins
+- then javafx 
+- then javafx:run 
+
 
 
 ## progress
