@@ -58,6 +58,7 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
   - `ScoreView`: Handles score display, high score tracking, and milestone animations.
   - `PreviewPanel`: Manages the "Next Bricks" preview display.
 - **AnimationController**: Enhanced to encapsulate "Insane Mode" speed ramping logic, removing game rule logic from the view controller.
+- **LockDelayManager**: Encapsulated the lock delay timer logic into a dedicated class in `com.comp2042.gameLogic`, removing complexity from `GameController`.
 
 ### Implemented but Not Working Properly
 

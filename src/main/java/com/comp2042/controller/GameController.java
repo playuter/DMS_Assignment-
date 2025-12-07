@@ -5,6 +5,7 @@ import com.comp2042.data.ClearRow;
 import com.comp2042.data.DownData;
 import com.comp2042.events.InputEventListener;
 import com.comp2042.events.MoveEvent;
+import com.comp2042.gameLogic.LockDelayManager;
 import com.comp2042.model.Board;
 import com.comp2042.model.SimpleBoard;
 import com.comp2042.view.ViewData;
@@ -15,46 +16,23 @@ public class GameController implements InputEventListener {
 
     private final GuiController viewGuiController;
 
-    private javafx.animation.Timeline lockTimer;
-    private boolean isLocking = false;
-    private static final int LOCK_DELAY_MS = 500;
+    private final LockDelayManager lockDelayManager;
 
     public GameController(GuiController c, int rows, int cols) {
         viewGuiController = c;
         this.board = new SimpleBoard(rows, cols);
         board.createNewBrick();
         
-        lockTimer = new javafx.animation.Timeline(new javafx.animation.KeyFrame(javafx.util.Duration.millis(LOCK_DELAY_MS), e -> lockBrick()));
-        lockTimer.setCycleCount(1);
+        // Initialize lock delay manager with the action to perform on lock
+        lockDelayManager = new LockDelayManager(this::lockBrick);
         
         viewGuiController.setEventListener(this);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
         viewGuiController.bindScore(board.getScore().scoreProperty());
     }
 
-    private void startLockTimer() {
-        if (!isLocking) {
-            isLocking = true;
-            lockTimer.playFromStart();
-        }
-    }
-
-    private void cancelLockTimer() {
-        if (isLocking) {
-            isLocking = false;
-            lockTimer.stop();
-        }
-    }
-
-    private void resetLockTimer() {
-        if (isLocking) {
-            lockTimer.stop();
-            lockTimer.playFromStart();
-        }
-    }
-
     private void lockBrick() {
-        cancelLockTimer();
+        lockDelayManager.cancelLockTimer();
         SoundManager.play("bop");
         board.mergeBrickToBackground();
         ClearRow clearRow = board.clearRows();
@@ -92,9 +70,9 @@ public class GameController implements InputEventListener {
 
         boolean moved = board.moveBrickDown();
         if (moved) {
-            cancelLockTimer();
+            lockDelayManager.cancelLockTimer();
         } else {
-            startLockTimer();
+            lockDelayManager.startLockTimer();
         }
         
         return new DownData(null, board.getViewData());
@@ -103,7 +81,7 @@ public class GameController implements InputEventListener {
     @Override
     public ViewData onLeftEvent(MoveEvent event) {
         if (board.moveBrickLeft()) {
-            resetLockTimer();
+            lockDelayManager.resetLockTimer();
         }
         return board.getViewData();
     }
@@ -111,7 +89,7 @@ public class GameController implements InputEventListener {
     @Override
     public ViewData onRightEvent(MoveEvent event) {
         if (board.moveBrickRight()) {
-            resetLockTimer();
+            lockDelayManager.resetLockTimer();
         }
         return board.getViewData();
     }
@@ -119,7 +97,7 @@ public class GameController implements InputEventListener {
     @Override
     public ViewData onRotateEvent(MoveEvent event) {
         if (board.rotateLeftBrick()) {
-            resetLockTimer();
+            lockDelayManager.resetLockTimer();
         }
         return board.getViewData();
     }
