@@ -24,6 +24,10 @@ public class SimpleBoard implements Board {
     private Point currentOffset;
     private final Score score;
 
+    private boolean isInsaneMode = false;
+    private boolean heartSpawned = false;
+    private boolean heartCollected = false;
+
     public SimpleBoard(int width, int height) {
         this.width = width;
         this.height = height;
@@ -108,8 +112,52 @@ public class SimpleBoard implements Board {
     public boolean createNewBrick() {
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
-        currentOffset = new Point(4, 2);
+        
+        // Insane Mode Heart/Bonus Brick Logic
+        if (isInsaneMode && !heartSpawned && score.scoreProperty().get() >= 150) {
+             // Force spawn on next brick
+             heartSpawned = true;
+             // Override brick color/value to 9 (Bonus Brick)
+             int[][] shape = brickRotator.getCurrentShape();
+             for (int i=0; i<shape.length; i++) {
+                 for (int j=0; j<shape[i].length; j++) {
+                     if (shape[i][j] != 0) {
+                         shape[i][j] = 9; // Set to Bonus Brick Value
+                     }
+                 }
+             }
+        }
+        
+        // Dynamic spawn position centering
+        // Standard board is 10 cols wide.
+        // Insane board is 20 cols wide.
+        // Note: 'this.height' holds the number of columns (passed as second arg to constructor)
+        //       'this.width' holds the number of rows.
+        
+        int boardWidth = this.height; // Columns
+        int centerX;
+        if (boardWidth > 10) {
+            // Wide board (Insane Mode)
+            centerX = (boardWidth / 2) - 2; // 20/2 - 2 = 8
+        } else {
+            // Standard board (Normal/Extra)
+            centerX = (boardWidth / 2) - 1; // 10/2 - 1 = 4
+        }
+        
+        currentOffset = new Point(centerX, 2);
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
+    }
+
+    @Override
+    public void setInsaneMode(boolean insaneMode) {
+        this.isInsaneMode = insaneMode;
+    }
+    
+    @Override
+    public boolean isHeartCollectedInLastClear() {
+        boolean collected = heartCollected;
+        heartCollected = false; // Reset after reading
+        return collected;
     }
 
     @Override
@@ -154,9 +202,46 @@ public class SimpleBoard implements Board {
     @Override
     public ClearRow clearRows() {
         ClearRow clearRow = MatrixOperations.checkRemoving(currentGameMatrix);
+        
+        // Check for Bonus Brick collection (Value 9) in cleared rows
+        for (Integer rowIndex : clearRow.getClearedRows()) {
+             if (rowIndex < currentGameMatrix.length) { // Safety check
+                 for (int val : currentGameMatrix[rowIndex]) {
+                     if (val == 9) {
+                         heartCollected = true;
+                         break;
+                     }
+                 }
+             }
+        }
+        
         currentGameMatrix = clearRow.getNewMatrix();
         return clearRow;
 
+    }
+
+    @Override
+    public void removeRow(int row) {
+        if (row >= 0 && row < currentGameMatrix.length) {
+            // Remove row by shifting everything above it down
+             for (int i = row; i > 0; i--) {
+                System.arraycopy(currentGameMatrix[i - 1], 0, currentGameMatrix[i], 0, currentGameMatrix[0].length);
+            }
+            // Clear top row
+            for (int j = 0; j < currentGameMatrix[0].length; j++) {
+                currentGameMatrix[0][j] = 0;
+            }
+        }
+    }
+
+    @Override
+    public void removeCol(int col) {
+        if (col >= 0 && col < currentGameMatrix[0].length) {
+            // Clear the column cells.
+            for (int i = 0; i < currentGameMatrix.length; i++) {
+                currentGameMatrix[i][col] = 0;
+            }
+        }
     }
 
     @Override
@@ -169,6 +254,8 @@ public class SimpleBoard implements Board {
     public void newGame() {
         currentGameMatrix = new int[width][height];
         score.reset();
+        heartSpawned = false;
+        heartCollected = false;
         createNewBrick();
     }
 }
