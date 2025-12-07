@@ -10,6 +10,11 @@ import com.comp2042.model.Board;
 import com.comp2042.model.SimpleBoard;
 import com.comp2042.view.ViewData;
 
+/**
+ * Manages the core game logic and coordinates interactions between the model (Board) and the view (GuiController).
+ * This class implements InputEventListener to respond to user actions and game events.
+ * It handles game state updates, brick locking, line clearing, and scoring.
+ */
 public class GameController implements InputEventListener {
 
     private Board board;
@@ -18,6 +23,13 @@ public class GameController implements InputEventListener {
 
     private final LockDelayManager lockDelayManager;
 
+    /**
+     * Creates a new GameController.
+     * 
+     * @param c The GuiController instance for view updates.
+     * @param rows The number of rows in the game board.
+     * @param cols The number of columns in the game board.
+     */
     public GameController(GuiController c, int rows, int cols) {
         viewGuiController = c;
         this.board = new SimpleBoard(rows, cols);
@@ -31,6 +43,10 @@ public class GameController implements InputEventListener {
         viewGuiController.bindScore(board.getScore().scoreProperty());
     }
 
+    /**
+     * Locks the current brick into the board, plays sound, checks for cleared rows,
+     * updates the score, and triggers animations or game over if necessary.
+     */
     private void lockBrick() {
         lockDelayManager.cancelLockTimer();
         SoundManager.play("bop");
@@ -60,6 +76,13 @@ public class GameController implements InputEventListener {
         }
     }
 
+    /**
+     * Handles the DOWN move event.
+     * Moves the brick down or performs a hard drop.
+     * 
+     * @param event The move event containing event type and source.
+     * @return The updated DownData containing view information.
+     */
     @Override
     public DownData onDownEvent(MoveEvent event) {
         if (event.getEventType() == com.comp2042.events.EventType.HARD_DROP) {
@@ -78,6 +101,13 @@ public class GameController implements InputEventListener {
         return new DownData(null, board.getViewData());
     }
 
+    /**
+     * Handles the LEFT move event.
+     * Moves the brick to the left if possible.
+     * 
+     * @param event The move event.
+     * @return The updated ViewData.
+     */
     @Override
     public ViewData onLeftEvent(MoveEvent event) {
         if (board.moveBrickLeft()) {
@@ -86,6 +116,13 @@ public class GameController implements InputEventListener {
         return board.getViewData();
     }
 
+    /**
+     * Handles the RIGHT move event.
+     * Moves the brick to the right if possible.
+     * 
+     * @param event The move event.
+     * @return The updated ViewData.
+     */
     @Override
     public ViewData onRightEvent(MoveEvent event) {
         if (board.moveBrickRight()) {
@@ -94,6 +131,13 @@ public class GameController implements InputEventListener {
         return board.getViewData();
     }
 
+    /**
+     * Handles the ROTATE move event.
+     * Rotates the brick if possible.
+     * 
+     * @param event The move event.
+     * @return The updated ViewData.
+     */
     @Override
     public ViewData onRotateEvent(MoveEvent event) {
         if (board.rotateLeftBrick()) {
@@ -103,6 +147,9 @@ public class GameController implements InputEventListener {
     }
 
 
+    /**
+     * Starts a new game by resetting the board and view.
+     */
     @Override
     public void createNewGame() {
         board.newGame();

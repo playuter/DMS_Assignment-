@@ -6,14 +6,29 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Rectangle;
 import java.util.List;
 
+/**
+ * View component responsible for displaying the "Next Pieces" preview.
+ * Renders the upcoming bricks in a side panel.
+ */
 public class PreviewPanel {
 
     private final GridPane nextBrickPanel;
 
+    /**
+     * Creates a new PreviewPanel.
+     * 
+     * @param nextBrickPanel The GridPane container where next bricks will be rendered.
+     */
     public PreviewPanel(GridPane nextBrickPanel) {
         this.nextBrickPanel = nextBrickPanel;
     }
 
+    /**
+     * Refreshes the preview display with the latest list of upcoming bricks.
+     * Clears the previous display and re-renders the new bricks.
+     * 
+     * @param brick The ViewData object containing the list of next bricks.
+     */
     public void refreshNextBricks(ViewData brick) {
         if (nextBrickPanel == null) return;
         nextBrickPanel.getChildren().clear();
@@ -42,4 +57,3 @@ public class PreviewPanel {
         }
     }
 }
-

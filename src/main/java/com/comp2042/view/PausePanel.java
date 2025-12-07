@@ -6,12 +6,22 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
+/**
+ * Panel displayed when the game is paused.
+ * Provides options to resume, restart, change settings, or return to the main menu.
+ * Includes a semi-transparent background for a full-screen overlay effect.
+ */
 public class PausePanel extends BorderPane {
 
     private final Button resumeButton;
     private final Button restartButton;
     private final Button mainMenuButton;
+    private final Button settingsButton;
 
+    /**
+     * Creates a new PausePanel.
+     * Initializes the layout, label, and navigation buttons.
+     */
     public PausePanel() {
         this.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);"); // Apply background to the entire panel
 
@@ -28,11 +38,8 @@ public class PausePanel extends BorderPane {
         restartButton = new Button("Restart");
         restartButton.getStyleClass().add("ipad-dark-grey");
         
-        Button settingsButton = new Button("Settings");
+        settingsButton = new Button("Settings");
         settingsButton.getStyleClass().add("ipad-dark-grey");
-        // We can assign an ID or expose it via getter, or handle action via callback.
-        // Since GuiController handles actions, we need to expose it.
-        this.settingsButton = settingsButton;
 
         mainMenuButton = new Button("Main Menu");
         mainMenuButton.getStyleClass().add("ipad-dark-grey");
@@ -41,22 +48,39 @@ public class PausePanel extends BorderPane {
         setCenter(content);
     }
 
-    private final Button settingsButton;
-
+    /**
+     * Gets the Resume button.
+     * 
+     * @return The resume button.
+     */
     public Button getResumeButton() {
         return resumeButton;
     }
 
+    /**
+     * Gets the Restart button.
+     * 
+     * @return The restart button.
+     */
     public Button getRestartButton() {
         return restartButton;
     }
     
+    /**
+     * Gets the Settings button.
+     * 
+     * @return The settings button.
+     */
     public Button getSettingsButton() {
         return settingsButton;
     }
 
+    /**
+     * Gets the Main Menu button.
+     * 
+     * @return The main menu button.
+     */
     public Button getMainMenuButton() {
         return mainMenuButton;
     }
 }
-

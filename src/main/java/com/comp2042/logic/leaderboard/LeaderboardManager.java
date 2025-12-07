@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Singleton manager for the game's leaderboard.
+ * Handles loading, saving, and updating player scores persistently.
+ */
 public class LeaderboardManager {
     private static final String FILE_PATH = "leaderboard.ser";
     private static final int MAX_SCORES = 50;
@@ -16,6 +20,11 @@ public class LeaderboardManager {
         loadScores();
     }
 
+    /**
+     * Gets the singleton instance of the LeaderboardManager.
+     * 
+     * @return The LeaderboardManager instance.
+     */
     public static synchronized LeaderboardManager getInstance() {
         if (instance == null) {
             instance = new LeaderboardManager();
@@ -23,6 +32,13 @@ public class LeaderboardManager {
         return instance;
     }
 
+    /**
+     * Adds a new score to the leaderboard.
+     * The list is automatically sorted and trimmed to the top 50 scores.
+     * 
+     * @param name The player's name.
+     * @param score The player's score.
+     */
     public void addScore(String name, int score) {
         scores.add(new PlayerScore(name, score));
         Collections.sort(scores);
@@ -33,10 +49,20 @@ public class LeaderboardManager {
         saveScores();
     }
 
+    /**
+     * Gets the list of top scores.
+     * 
+     * @return An unmodifiable list of PlayerScore objects.
+     */
     public List<PlayerScore> getScores() {
         return Collections.unmodifiableList(scores);
     }
 
+    /**
+     * Gets the highest score currently on the leaderboard.
+     * 
+     * @return The highest score, or 0 if the leaderboard is empty.
+     */
     public int getHighestScore() {
         if (scores.isEmpty()) {
             return 0;
@@ -44,6 +70,9 @@ public class LeaderboardManager {
         return scores.get(0).getScore();
     }
 
+    /**
+     * Loads scores from the persistent file.
+     */
     @SuppressWarnings("unchecked")
     private void loadScores() {
         File file = new File(FILE_PATH);
@@ -57,6 +86,9 @@ public class LeaderboardManager {
         }
     }
 
+    /**
+     * Saves the current scores to the persistent file.
+     */
     private void saveScores() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
             oos.writeObject(scores);
@@ -65,4 +97,3 @@ public class LeaderboardManager {
         }
     }
 }
-

@@ -48,6 +48,11 @@ import com.comp2042.constants.GameConstants;
 import com.comp2042.view.components.PreviewPanel;
 import com.comp2042.view.components.ScoreView;
 
+/**
+ * Controller for the main game GUI (JavaFX).
+ * Manages the display of the game board, bricks, score, next pieces, and overlays.
+ * It delegates input handling to InputHandler and game logic events to GameController.
+ */
 public class GuiController implements Initializable, InputHandler.BrickDisplayUpdater {
 
     private static final int BRICK_SIZE = GameConstants.BRICK_SIZE;
@@ -107,6 +112,13 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     private ScoreView scoreView;
     private PreviewPanel previewPanel;
 
+    /**
+     * Initializes the controller class. This method is automatically called
+     * after the fxml file has been loaded.
+     * 
+     * @param location The location used to resolve relative paths for the root object.
+     * @param resources The resources used to localize the root object.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
@@ -182,6 +194,13 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         // High Score initialization moved to ScoreView
     }
 
+    /**
+     * Initializes the game view with the board matrix and current brick.
+     * Sets up the grid of rectangles for the board and the falling brick.
+     * 
+     * @param boardMatrix The current state of the game board.
+     * @param brick The current falling brick view data.
+     */
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         // Adjust game board container size based on matrix width
         if (gameBoardContainer != null) {
@@ -253,6 +272,8 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     /**
      * Refreshes the brick display with new position and shape data.
      * Part of the BrickDisplayUpdater interface.
+     * 
+     * @param brick The updated view data for the falling brick.
      */
     @Override
     public void refreshBrick(ViewData brick) {
@@ -284,6 +305,8 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     /**
      * Handles downward movement of the brick.
      * Part of the BrickDisplayUpdater interface.
+     * 
+     * @param event The move event triggering the down movement.
      */
     @Override
     public void moveDown(MoveEvent event) {
@@ -324,6 +347,11 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         isGameOver.setValue(Boolean.FALSE);
     }
 
+    /**
+     * Refreshes the game board background to reflect the current state of locked bricks.
+     * 
+     * @param board The matrix representing the game board.
+     */
     public void refreshGameBackground(int[][] board) {
         for (int i = 2; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -334,6 +362,12 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         }
     }
 
+    /**
+     * Animates the clearing of rows.
+     * 
+     * @param rows The list of row indices to clear.
+     * @param onFinished A runnable to execute after the animation completes.
+     */
     public void animateClearRows(java.util.List<Integer> rows, Runnable onFinished) {
         // Play clear sound for single line, or doubleLineClear for multiple lines
         if (rows.size() > 1) {
@@ -371,6 +405,12 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     }
 
 
+    /**
+     * Sets the event listener for handling game logic events.
+     * Also initializes the InputHandler.
+     * 
+     * @param eventListener The event listener to set.
+     */
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
         // Create input handler after event listener is set
@@ -382,6 +422,11 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         );
     }
 
+    /**
+     * Binds the score property to the ScoreView.
+     * 
+     * @param integerProperty The score property to bind.
+     */
     public void bindScore(IntegerProperty integerProperty) {
         if (scoreView != null) {
             scoreView.bindScore(integerProperty);
@@ -390,6 +435,9 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
 
     // isMilestone delegated to ScoreView
 
+    /**
+     * Triggers the score animation.
+     */
     public void animateScore() {
         if (scoreView != null) {
             scoreView.animateScore();
@@ -398,18 +446,37 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
 
     // animateScore(Text target) delegated to ScoreView
 
+    /**
+     * Sets the player's name.
+     * 
+     * @param playerName The player's name.
+     */
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
     }
 
+    /**
+     * Sets the initial fall speed for the game.
+     * 
+     * @param speed The initial fall speed in milliseconds.
+     */
     public void setInitialFallSpeed(long speed) {
         this.initialFallSpeed = speed;
     }
 
+    /**
+     * Sets whether the game is in Insane Mode.
+     * 
+     * @param insaneMode True if Insane Mode is enabled, false otherwise.
+     */
     public void setInsaneMode(boolean insaneMode) {
         this.isInsaneMode = insaneMode;
     }
 
+    /**
+     * Handles the Game Over state.
+     * Stops the game, plays sound, shows the Game Over panel, and saves the score.
+     */
     public void gameOver() {
         animationController.stop();
         SoundManager.play("gameover");
@@ -435,6 +502,8 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     /**
      * Public method for FXML button binding (if needed).
      * Delegates to the newGame() method from BrickDisplayUpdater interface.
+     * 
+     * @param actionEvent The action event triggering the new game.
      */
     public void newGame(ActionEvent actionEvent) {
         newGame();
@@ -444,6 +513,11 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
 
     private long pauseStartTime;
 
+    /**
+     * Toggles the game pause state.
+     * Stops/resumes the animation and music, and shows/hides the pause panel.
+     * Part of the BrickDisplayUpdater interface.
+     */
     @Override
     public void pauseGame() {
         if (isGameOver.getValue() == Boolean.FALSE) {
@@ -478,6 +552,11 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
         gamePanel.requestFocus();
     }
 
+    /**
+     * Public method for FXML button binding to pause/resume the game.
+     * 
+     * @param actionEvent The action event.
+     */
     public void pauseGame(ActionEvent actionEvent) {
         pauseGame();
     }

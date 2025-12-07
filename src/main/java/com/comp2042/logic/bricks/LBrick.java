@@ -5,14 +5,20 @@ import java.util.List;
 
 import com.comp2042.gameLogic.MatrixOperations;
 
+/**
+ * Represents the 'L' shaped Tetris brick.
+ * This brick is shaped like an L (orange color).
+ */
 final class LBrick implements Brick {
 
     private final List<int[][]> brickMatrix = new ArrayList<>();
 
+    /**
+     * Creates a new LBrick.
+     * Initializes the 4 rotation states.
+     */
     public LBrick() {
         // 0 - Up
-        // . . X
-        // X X X
         brickMatrix.add(new int[][]{
                 {0, 0, 3, 0},
                 {3, 3, 3, 0},
@@ -20,9 +26,6 @@ final class LBrick implements Brick {
                 {0, 0, 0, 0}
         });
         // 1 - Right
-        // . 3 .
-        // . 3 .
-        // . 3 3
         brickMatrix.add(new int[][]{
                 {0, 3, 0, 0},
                 {0, 3, 0, 0},
@@ -30,9 +33,6 @@ final class LBrick implements Brick {
                 {0, 0, 0, 0}
         });
         // 2 - Down
-        // . . .
-        // 3 3 3
-        // 3 . .
         brickMatrix.add(new int[][]{
                 {0, 0, 0, 0},
                 {3, 3, 3, 0},
@@ -40,9 +40,6 @@ final class LBrick implements Brick {
                 {0, 0, 0, 0}
         });
         // 3 - Left
-        // 3 3 .
-        // . 3 .
-        // . 3 .
         brickMatrix.add(new int[][]{
                 {3, 3, 0, 0},
                 {0, 3, 0, 0},
@@ -51,6 +48,11 @@ final class LBrick implements Brick {
         });
     }
 
+    /**
+     * Gets the shape matrices for this brick.
+     * 
+     * @return A list of int arrays representing the brick's rotations.
+     */
     @Override
     public List<int[][]> getShapeMatrix() {
         return MatrixOperations.deepCopyList(brickMatrix);

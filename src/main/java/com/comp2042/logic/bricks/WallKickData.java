@@ -4,6 +4,11 @@ import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Data provider for the Super Rotation System (SRS) wall kicks.
+ * Stores the offset data required to rotate pieces when they are blocked by walls or other blocks.
+ * See https://tetris.wiki/Super_Rotation_System for details.
+ */
 public class WallKickData {
 
     private static final Map<String, Point[]> KICKS_JLSTZ = new HashMap<>();
@@ -85,6 +90,14 @@ public class WallKickData {
         KICKS_I.put("0-3", new Point[]{new Point(0,0), new Point(-1,0), new Point(2,0), new Point(-1,-2), new Point(2,1)});
     }
 
+    /**
+     * Retrieves the wall kick offsets for a specific rotation transition.
+     * 
+     * @param brick The brick being rotated (different rules for I vs others).
+     * @param currentRot The current rotation state (0=Up, 1=Right, 2=Down, 3=Left).
+     * @param nextRot The target rotation state.
+     * @return An array of Point objects representing the test offsets (kicks) to try.
+     */
     public static Point[] getKicks(Brick brick, int currentRot, int nextRot) {
         if (brick instanceof OBrick) {
             return new Point[]{new Point(0,0)};

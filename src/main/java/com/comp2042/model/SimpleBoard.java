@@ -16,6 +16,11 @@ import java.util.List;
 
 import com.comp2042.constants.GameConstants;
 
+/**
+ * Default implementation of the Board interface.
+ * Manages the game state, including the grid matrix, the current falling brick,
+ * collision detection, and row clearing logic.
+ */
 public class SimpleBoard implements Board {
 
     private final int width;
@@ -26,6 +31,12 @@ public class SimpleBoard implements Board {
     private Point currentOffset;
     private final Score score;
 
+    /**
+     * Creates a new SimpleBoard with the specified dimensions.
+     * 
+     * @param width The number of rows in the board.
+     * @param height The number of columns in the board.
+     */
     public SimpleBoard(int width, int height) {
         this.width = width;
         this.height = height;
@@ -35,6 +46,10 @@ public class SimpleBoard implements Board {
         score = new Score();
     }
 
+    /**
+     * {@inheritDoc}
+     * Uses MatrixOperations to check for collisions.
+     */
     @Override
     public boolean moveBrickDown() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
@@ -49,6 +64,10 @@ public class SimpleBoard implements Board {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * Calculates the shadow position and moves the brick directly to it.
+     */
     @Override
     public void hardDrop() {
         int shadowY = calculateShadowY();
@@ -56,6 +75,9 @@ public class SimpleBoard implements Board {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean moveBrickLeft() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
@@ -70,6 +92,9 @@ public class SimpleBoard implements Board {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean moveBrickRight() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
@@ -84,6 +109,10 @@ public class SimpleBoard implements Board {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * Implements the Super Rotation System (SRS) wall kicks to allow rotation in tight spaces.
+     */
     @Override
     public boolean rotateLeftBrick() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
@@ -106,6 +135,10 @@ public class SimpleBoard implements Board {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     * Centers the new brick based on the board width.
+     */
     @Override
     public boolean createNewBrick() {
         Brick currentBrick = brickGenerator.getBrick();
@@ -131,11 +164,17 @@ public class SimpleBoard implements Board {
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int[][] getBoardMatrix() {
         return currentGameMatrix;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ViewData getViewData() {
         int shadowY = calculateShadowY();
@@ -151,6 +190,12 @@ public class SimpleBoard implements Board {
                           shadowY);
     }
 
+    /**
+     * Calculates the Y-coordinate where the current brick would land if dropped instantly.
+     * Used for rendering the "ghost" piece.
+     * 
+     * @return The Y-coordinate for the shadow.
+     */
     private int calculateShadowY() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
         int[][] shape = brickRotator.getCurrentShape();
@@ -165,11 +210,17 @@ public class SimpleBoard implements Board {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void mergeBrickToBackground() {
         currentGameMatrix = MatrixOperations.merge(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ClearRow clearRows() {
         ClearRow clearRow = MatrixOperations.checkRemoving(currentGameMatrix);
@@ -177,12 +228,18 @@ public class SimpleBoard implements Board {
         return clearRow;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Score getScore() {
         return score;
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void newGame() {
         currentGameMatrix = new int[width][height];

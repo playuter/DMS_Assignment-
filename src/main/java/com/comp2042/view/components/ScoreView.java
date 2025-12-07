@@ -5,18 +5,28 @@ import com.comp2042.controller.SoundManager;
 import com.comp2042.logic.leaderboard.LeaderboardManager;
 import javafx.animation.ScaleTransition;
 import javafx.beans.property.IntegerProperty;
-import javafx.scene.control.Label;
 import javafx.scene.effect.Glow;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+/**
+ * View component responsible for displaying the score and high score.
+ * Handles score updates, high score tracking, and visual animations for score milestones.
+ */
 public class ScoreView {
 
     private final Text scoreValue;
     private final Text highScoreValue;
     private final VBox container;
 
+    /**
+     * Creates a new ScoreView.
+     * 
+     * @param scoreValue The Text node for displaying the current score.
+     * @param highScoreValue The Text node for displaying the high score.
+     * @param container The parent VBox container (optional, can be null).
+     */
     public ScoreView(Text scoreValue, Text highScoreValue, VBox container) {
         this.scoreValue = scoreValue;
         this.highScoreValue = highScoreValue;
@@ -24,6 +34,9 @@ public class ScoreView {
         initializeHighScore();
     }
 
+    /**
+     * Loads and displays the current highest score from the leaderboard manager.
+     */
     private void initializeHighScore() {
         int currentHighScore = LeaderboardManager.getInstance().getHighestScore();
         if (highScoreValue != null) {
@@ -31,6 +44,12 @@ public class ScoreView {
         }
     }
 
+    /**
+     * Binds the score display to the game's score property.
+     * Sets up listeners to update high score and trigger animations/sounds on milestones.
+     * 
+     * @param scoreProperty The score property to bind to.
+     */
     public void bindScore(IntegerProperty scoreProperty) {
         scoreValue.textProperty().bind(scoreProperty.asString());
         
@@ -55,6 +74,12 @@ public class ScoreView {
         });
     }
 
+    /**
+     * Checks if the current score has reached a defined milestone.
+     * 
+     * @param score The current score.
+     * @return True if the score is a milestone, false otherwise.
+     */
     private boolean isMilestone(int score) {
         if (score == 0) return false;
         for (int milestone : GameConstants.MILESTONES) {
@@ -63,10 +88,18 @@ public class ScoreView {
         return false;
     }
 
+    /**
+     * Triggers the score animation on the main score text.
+     */
     public void animateScore() {
         animateScore(scoreValue);
     }
 
+    /**
+     * Helper method to apply a scale and glow animation to a text node.
+     * 
+     * @param target The Text node to animate.
+     */
     private void animateScore(Text target) {
         ScaleTransition st = new ScaleTransition(Duration.millis(200), target);
         st.setFromX(1.0);
@@ -82,6 +115,11 @@ public class ScoreView {
         st.setOnFinished(e -> target.setEffect(null));
     }
     
+    /**
+     * Gets the current score as an integer.
+     * 
+     * @return The current score, or 0 if parsing fails.
+     */
     public int getCurrentScore() {
         try {
             return Integer.parseInt(scoreValue.getText());
@@ -90,4 +128,3 @@ public class ScoreView {
         }
     }
 }
-
