@@ -21,13 +21,6 @@
             <GridPane fx:id="shadowPanel" vgap="1" hgap="1" opacity="0.3"/>
         <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
             
-            <VBox layoutX="20" layoutY="20">
-                 <Label text="SCORE" styleClass="scoreClass" style="-fx-font-size: 20;"/>
-                 <Text fx:id="scoreValue" text="0" styleClass="scoreClass"/>
-                 <Label text="HIGH SCORE" styleClass="scoreClass" style="-fx-font-size: 16; -fx-padding: 10 0 0 0;"/>
-                 <Text fx:id="highScoreValue" text="0" styleClass="scoreClass" style="-fx-font-size: 16;"/>
-            </VBox>
-
         <BorderPane styleClass="gameBoard" fx:id="gameBoard">
             <center>
                 <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
@@ -45,6 +38,10 @@
         <!-- Side Panel for Next Pieces -->
         <VBox alignment="TOP_CENTER" spacing="10" styleClass="gameBoard" 
               maxWidth="150" maxHeight="510" prefWidth="150" prefHeight="510">
+            <Label text="SCORE" styleClass="scoreClass" style="-fx-font-size: 20; -fx-padding: 20 0 0 0;"/>
+            <Text fx:id="scoreValue" text="0" styleClass="scoreClass"/>
+            <Label text="HIGH SCORE" styleClass="scoreClass" style="-fx-font-size: 16; -fx-padding: 10 0 0 0;"/>
+            <Text fx:id="highScoreValue" text="0" styleClass="scoreClass" style="-fx-font-size: 16;"/>
             <Label text="NEXT" styleClass="scoreClass" style="-fx-font-size: 20; -fx-padding: 20 0 10 0;"/>
             <GridPane fx:id="nextBrickPanel" alignment="CENTER" hgap="1" vgap="10"/>
         </VBox>
