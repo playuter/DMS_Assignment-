@@ -48,7 +48,8 @@ Implemented pause game functionality using 'P' key and new PausePanel<br>
 **Sound Enhancements**: Adjusted volume levels (louder 'bop' sound) and fixed sound overlap issues.<br>
 **Enhanced Game Over Screen**: Added Restart, Main Menu, Leaderboard, and Save & Quit buttons to the Game Over screen.<br>
 **Insane Level Update**: The "Insane" difficulty now features a board that is double the width (20 columns) of the standard board, providing a significantly more challenging experience. The layout dynamically adjusts to ensure the preview box remains visible next to the expanded board without overlapping. Additionally, the falling speed gradually increases over 2 minutes, starting from 200ms and reaching a maximum double speed of 100ms.<br>
-**Dynamic Live Wallpaper**: The live video background (`liveWallpaper.mp4`) now automatically scales to fill the entire application window, regardless of window size or game mode (Normal/Insane).
+**Dynamic Live Wallpaper**: The live video background (`liveWallpaper.mp4`) now automatically scales to fill the entire application window, regardless of window size or game mode (Normal/Insane).<br>
+**UI Layout Improvement**: Moved the Score and High Score displays to the side panel (above the "Next" pieces) to streamline the game view and prevent overlap issues in wider board modes.
 
 ### Implemented but Not Working Properly
 

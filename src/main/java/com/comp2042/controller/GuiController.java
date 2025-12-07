@@ -180,8 +180,9 @@ public class GuiController implements Initializable, InputHandler.BrickDisplayUp
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         // Adjust game board container size based on matrix width
         if (gameBoardContainer != null) {
-            // Calculate required width: Matrix width + padding for score/borders (approx 110px based on layout)
-            double requiredWidth = boardMatrix[0].length * BRICK_SIZE + 110;
+            // Calculate required width: Matrix width + padding for margins (approx 60px: 40px left + 20px right)
+            // Score panel has been moved to the side panel, so less padding is needed here.
+            double requiredWidth = boardMatrix[0].length * BRICK_SIZE + 60;
             gameBoardContainer.setMinWidth(requiredWidth);
             gameBoardContainer.setPrefWidth(requiredWidth);
             gameBoardContainer.setMaxWidth(requiredWidth);
