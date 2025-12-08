@@ -46,6 +46,9 @@ JavaFx (done by maven)
 
 ## how to run
 
+###Clone the repository <br>
+https://github.com/playuter/DMS_Assignment
+
 ### Command Line
 
 #### How to Build
